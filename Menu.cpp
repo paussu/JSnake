@@ -7,8 +7,8 @@
 #include "Game.h"
 
 Menu::Menu()
-: isRunning(true), gameStartRequested(false), showMenu(true), mDisplay(nullptr), mEventQueue(nullptr)
-, clearColor(ImVec4(0.45f, 0.55f, 0.60f, 1.00f)), mWidth(1280), mHeight(720)
+: isRunning(true), gameStartRequested(false), showMenu(true), showOptions(false), mDisplay(nullptr)
+, mEventQueue(nullptr), clearColor(ImVec4(0.45f, 0.55f, 0.60f, 1.00f)), mWidth(1280), mHeight(720)
 {
 
 }
@@ -53,8 +53,14 @@ void Menu::RunLoop()
         if(gameStartRequested)
         {
             gameStartRequested = false;
+
+            // Exit menu
             Shutdown();
+
+            // Run game
             RunGame();
+
+            // Initialize menu again
             Initialize();
         }
     }
@@ -105,14 +111,18 @@ void Menu::GenerateOutput()
 void Menu::DrawMenu()
 {
     ImGui::SetNextWindowSize(ImVec2(mWidth  / 4, mHeight - (mHeight / 2)), ImGuiCond_FirstUseEver);
-
-    ImGui::Begin("Start menu");
+    ImGui::SetNextWindowPos(ImVec2(mWidth / 3, 100));
+    ImGui::Begin("Start menu", NULL, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
 
     if (ImGui::Button("Play", ImVec2(mWidth  / 4, 100)))
-    {
         gameStartRequested = true;
-    }
-    if (ImGui::Button("Exit", ImVec2(mWidth  / 4, 100))) isRunning = false;
+
+    if (ImGui::Button("Options", ImVec2(mWidth  / 4, 100)))
+        showOptions = true;
+
+    if (ImGui::Button("Exit", ImVec2(mWidth  / 4, 100)))
+        isRunning = false;
+
     ImGui::End();
 }
 

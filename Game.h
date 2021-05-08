@@ -2,11 +2,12 @@
 // Created by jipe on 5/8/21.
 //
 
-#ifndef JSNAKE_GAME_H
-#define JSNAKE_GAME_H
+#pragma once
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
+#include <memory>
+#include "Snake.h"
 
 class Game
 {
@@ -15,21 +16,14 @@ public:
     ~Game() = default;
 
     bool Initialize();
-
     void RunLoop();
-
     void Shutdown();
-    void Pause();
 
 private:
 
     void ProcessInput();
     void UpdateGame();
     void GenerateOutput();
-
-    void LoadData();
-    void UnloadData();
-
 
     bool isRunning;
     bool isPaused;
@@ -38,7 +32,5 @@ private:
 
     ALLEGRO_DISPLAY* mDisplay;
     ALLEGRO_EVENT_QUEUE* mEventQueue;
-
+    std::unique_ptr<Snake> mSnake;
 };
-
-#endif //JSNAKE_GAME_H

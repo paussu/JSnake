@@ -8,7 +8,7 @@ Game::Game(ALLEGRO_DISPLAY* display, ALLEGRO_EVENT_QUEUE* eventQueue)
 : mDisplay(display), mEventQueue(eventQueue), isRunning(true), isPaused(false)
 , mWidth(1280), mHeight(720)
 {
-
+    mSnake = std::make_unique<Snake>();
 }
 
 bool Game::Initialize()
@@ -34,8 +34,11 @@ void Game::RunLoop()
     while (isRunning)
     {
         ProcessInput();
-        UpdateGame();
-        GenerateOutput();
+        if(!isPaused)
+        {
+            UpdateGame();
+            GenerateOutput();
+        }
     }
 }
 
@@ -45,19 +48,42 @@ void Game::Shutdown()
     al_destroy_display(mDisplay);
 }
 
-void Game::Pause()
-{
-
-}
-
 void Game::ProcessInput()
 {
 // Poll and handle events (inputs, window resize, etc.)
-    ALLEGRO_EVENT ev;
-    while (al_get_next_event(mEventQueue, &ev))
+    ALLEGRO_EVENT event;
+    while (al_get_next_event(mEventQueue, &event))
     {
-        if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
             isRunning = false;
+
+        if(event.type == ALLEGRO_EVENT_KEY_DOWN) ///look for keyboard events
+        {
+            if(event.keyboard.keycode == ALLEGRO_KEY_P)
+            {
+                isPaused = !isPaused;
+            }
+
+            if(isPaused) continue;
+
+            if(event.keyboard.keycode == ALLEGRO_KEY_UP)
+            {
+                mSnake->Move(0, -10);
+            }
+            if(event.keyboard.keycode == ALLEGRO_KEY_DOWN)
+            {
+                mSnake->Move(0, 10);
+            }
+            if(event.keyboard.keycode == ALLEGRO_KEY_LEFT)
+            {
+                mSnake->Move(-10, 0);
+            }
+            if(event.keyboard.keycode == ALLEGRO_KEY_RIGHT)
+            {
+                mSnake->Move(10, 0);
+            }
+        }
+
     }
 }
 
@@ -68,21 +94,11 @@ void Game::UpdateGame()
 
 void Game::GenerateOutput()
 {
-    al_draw_filled_triangle(35, 350, 85, 375, 35, 400, al_map_rgb_f(0, 1, 0));
-    al_draw_filled_rectangle(240, 260, 340, 340, al_map_rgba_f(0, 0, 0.5, 0.5));
-    al_draw_circle(450, 370, 30, al_map_rgb_f(1, 0, 1), 2);
-    al_draw_line(440, 110, 460, 210, al_map_rgb_f(1, 0, 0), 1);
-    al_draw_line(500, 220, 570, 200, al_map_rgb_f(1, 1, 0), 1);
+    al_clear_to_color(ALLEGRO_COLOR{.r = 0, .g = 0, .b = 0, .a = 0});
+
+    mSnake->Draw();
+
     al_flip_display();
 }
 
-void Game::LoadData()
-{
-
-}
-
-void Game::UnloadData()
-{
-
-}
 

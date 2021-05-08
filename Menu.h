@@ -2,8 +2,7 @@
 // Created by jipe on 5/8/21.
 //
 
-#ifndef JSNAKE_MENU_H
-#define JSNAKE_MENU_H
+#pragma once
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
@@ -30,6 +29,8 @@ private:
     bool isRunning;
     bool gameStartRequested;
     bool showMenu;
+    bool showOptions;
+
     ImVec4 clearColor;
     int mWidth, mHeight;
 
@@ -39,4 +40,3 @@ private:
     void RunGame();
 };
 
-#endif //JSNAKE_MENU_H
