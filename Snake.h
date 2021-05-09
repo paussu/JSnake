@@ -15,12 +15,17 @@ public:
 
     void Grow();
     void Move(float x, float y);
-
     void Draw();
+    bool CheckCollision();
+
+    ALLEGRO_VERTEX &GetPosition();
+    ALLEGRO_VERTEX &GetDirection();
+    ALLEGRO_VERTEX &GetPreviousDirection();
 private:
     std::list<ALLEGRO_VERTEX> mSnake;
     float mSnakeWidth;
     ALLEGRO_COLOR mSnakeColor;
-    ALLEGRO_VERTEX mSnakeDirection;
+    ALLEGRO_VERTEX mDirection;
+    ALLEGRO_VERTEX mPreviousDirection;
 };
 
