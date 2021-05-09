@@ -2,10 +2,11 @@
 // Created by jipe on 5/8/21.
 //
 
+#include <ranges>
 #include "Snake.h"
 
 Snake::Snake()
-: mSnakeWidth(10.0f), mSnakeColor{.r = 255, .g = 0, .b = 0, .a = 255}, mDirection{.x = -1, .y = 0}, mPreviousDirection{.x = -1, .y = 0}
+: mSnakeWidth(10.0f), mSnakeColor{.r = 255, .g = 0, .b = 0, .a = 255}, mDirection{.x = -1, .y = 0}
 {
     mSnake = std::list<ALLEGRO_VERTEX>();
     mSnake.emplace_back(ALLEGRO_VERTEX{.x = 100, .y = 10, .color = mSnakeColor});
@@ -17,14 +18,15 @@ Snake::Snake()
 
 void Snake::Grow()
 {
-    const auto &head = mSnake.front();
-    mSnake.emplace_front(ALLEGRO_VERTEX{.x = head.x + (mSnakeWidth * mDirection.x), .y = head.y + (mSnakeWidth * mDirection.y), .color = mSnakeColor});
-    mDirection.x = 0;
-    mDirection.y = 0;
+    // Place it out of sight it, it will get position from the last piece
+    mSnake.emplace_back(ALLEGRO_VERTEX{.x = -200, .y = -200, .color = mSnakeColor});
 }
 
 void Snake::Move(float x, float y)
 {
+    mDirection.x = 0;
+    mDirection.y = 0;
+
     if(x > 0) mDirection.x = 1;
     if(x < 0) mDirection.x = -1;
     if(y > 0) mDirection.y = 1;
@@ -32,29 +34,24 @@ void Snake::Move(float x, float y)
 
     float lastX;
     float lastY;
-    for(auto &part : mSnake)
+    for (auto it = std::begin(mSnake), first = it, end = std::end(mSnake); it != end; ++it)
     {
 
-        float tempX = part.x;
-        float tempY = part.y;
-        if(part.x == mSnake.front().x && part.y == mSnake.front().y)
+        float tempX = it->x;
+        float tempY = it->y;
+        if(it == first)
         {
-            part.x += x;
-            part.y += y;
+            it->x += x;
+            it->y += y;
         }
         else
         {
-            part.x = lastX;
-            part.y = lastY;
+            it->x = lastX;
+            it->y = lastY;
         }
         lastX = tempX;
         lastY = tempY;
     }
-
-    mPreviousDirection.x = mDirection.x;
-    mPreviousDirection.y = mDirection.y;
-    mDirection.x = 0;
-    mDirection.y = 0;
 }
 
 void Snake::Draw()
@@ -75,13 +72,16 @@ ALLEGRO_VERTEX &Snake::GetDirection()
     return mDirection;
 }
 
-ALLEGRO_VERTEX &Snake::GetPreviousDirection()
-{
-    return mPreviousDirection;
-}
-
 bool Snake::CheckCollision()
 {
+    auto &head = mSnake.front();
+    for (auto it = std::begin(mSnake), first = it, end = std::end(mSnake); it != end; ++it)
+    {
+        if(it == first) continue;
+
+        if(it->x == head.x && it->y == head.y)
+            return true;
+    }
     return false;
 }
 

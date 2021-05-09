@@ -32,7 +32,6 @@ bool Menu::Initialize()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -100,6 +99,7 @@ void Menu::GenerateOutput()
     ImGui::NewFrame();
 
     DrawMenu();
+    DrawOptions();
 
     // Rendering
     ImGui::Render();
@@ -138,4 +138,18 @@ void Menu::RunGame()
     game->Shutdown();
 }
 
+void Menu::DrawOptions()
+{
+    if(!showOptions)
+        return;
+
+    ImGui::SetNextWindowSize(ImVec2(mWidth, mHeight - (mHeight / 4)), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(mWidth / 4, 100));
+    ImGui::Begin("Options", NULL, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
+
+    if (ImGui::Button("Exit Options", ImVec2(mWidth  / 4, 100)))
+        showOptions = false;
+
+    ImGui::End();
+}
 

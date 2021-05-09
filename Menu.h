@@ -24,6 +24,7 @@ public:
 private:
     void ProcessInput();
     void DrawMenu();
+    void DrawOptions();
     void GenerateOutput();
 
     bool isRunning;

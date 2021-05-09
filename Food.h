@@ -18,6 +18,7 @@ public:
     bool IsEaten(ALLEGRO_VERTEX &snakePosition) const;
 private:
     ALLEGRO_VERTEX mPosition;
+    float mFoodSize;
 };
 
 

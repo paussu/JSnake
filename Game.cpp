@@ -3,10 +3,9 @@
 //
 
 #include "Game.h"
-#include <time.h>
 
 Game::Game(ALLEGRO_DISPLAY* display, ALLEGRO_EVENT_QUEUE* eventQueue)
-: mDisplay(display), mEventQueue(eventQueue), isRunning(true), isPaused(false)
+: mDisplay(display), mEventQueue(eventQueue), mTimer(nullptr), isRunning(true), isPaused(false)
 , mWidth(1280), mHeight(720), mRandomEngine(std::chrono::steady_clock::now().time_since_epoch().count())
 , previousTime(0), currentTime(0), mSpeed(2.0)
 {
@@ -56,7 +55,7 @@ void Game::Shutdown()
 
 void Game::ProcessInput()
 {
-// Poll and handle events (inputs, window resize, etc.)
+    // Poll and handle events (inputs, window resize, etc.)
     ALLEGRO_EVENT event;
     while (al_get_next_event(mEventQueue, &event))
     {
@@ -68,6 +67,11 @@ void Game::ProcessInput()
             if(event.keyboard.keycode == ALLEGRO_KEY_P)
             {
                 isPaused = !isPaused;
+            }
+
+            if(event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+            {
+                isRunning = false;
             }
 
         }
@@ -117,7 +121,7 @@ void Game::UpdateGame()
     currentTime = al_get_timer_count(mTimer);
     if(previousTime + mSpeed < currentTime)
     {
-        mSnake->Move(10 * mSnake->GetPreviousDirection().x, 10 * mSnake->GetPreviousDirection().y);
+        mSnake->Move(10 * mSnake->GetDirection().x, 10 * mSnake->GetDirection().y);
         previousTime = currentTime;
     }
 
@@ -142,6 +146,7 @@ ALLEGRO_VERTEX Game::RandomPosition(float foodSize)
     std::uniform_int_distribution<int> xDistribution {10, mWidth};
     randomVertex.x = xDistribution(mRandomEngine);
     randomVertex.x -= fmodf(randomVertex.x, foodSize);
+
     std::uniform_int_distribution<int> yDistribution {10, mHeight};
     randomVertex.y = yDistribution(mRandomEngine);
     randomVertex.y -= fmodf(randomVertex.y, foodSize);
