@@ -1,8 +1,6 @@
 //
 // Created by jipe on 5/8/21.
 //
-
-#include <memory>
 #include "Menu.h"
 #include "Game.h"
 
@@ -20,9 +18,11 @@ bool Menu::Initialize()
     al_install_keyboard();
     al_install_mouse();
     al_init_primitives_addon();
+
     al_set_new_display_flags(ALLEGRO_RESIZABLE);
     mDisplay = al_create_display(mWidth, mHeight);
     al_set_window_title(mDisplay, "JSnake");
+
     mEventQueue = al_create_event_queue();
     al_register_event_source(mEventQueue, al_get_display_event_source(mDisplay));
     al_register_event_source(mEventQueue, al_get_keyboard_event_source());

@@ -6,7 +6,11 @@ Testing Allegro and Dear Imgui with a little snake game
 
 ## Todo:
 - [ ] Add functionality to options menu
-- [ ] Pause screen
+- [x] Pause screen
 - [ ] Count points
 ### Optional
 - [ ] Improve graphics 
+
+
+### Assets:
+Font: https://opengameart.org/content/font-retrospace
