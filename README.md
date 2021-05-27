@@ -5,9 +5,11 @@
 Testing Allegro and Dear Imgui with a little snake game
 
 ## Todo:
-- [ ] Add functionality to options menu
-- [x] Pause screen
-- [ ] Count points
+- [X] Add functionality to options menu
+  - [ ] Improve menu usability and looks 
+- [x] Add Pause screen
+- [ ] Add Lose screen
+- [X] Count points
 ### Optional
 - [ ] Improve graphics 
 
