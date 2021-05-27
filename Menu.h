@@ -6,9 +6,11 @@
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
+#include <memory>
 
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_allegro5.h"
+#include "Options.h"
 
 class Menu
 {
@@ -21,11 +23,17 @@ public:
     void RunLoop();
 
     void Shutdown();
+
+    [[nodiscard]] int GetWidth() const;
+
+    [[nodiscard]] int GetHeight() const;
+
 private:
     void ProcessInput();
     void DrawMenu();
     void DrawOptions();
     void GenerateOutput();
+    void RunGame();
 
     bool isRunning;
     bool gameStartRequested;
@@ -38,6 +46,6 @@ private:
     ALLEGRO_DISPLAY* mDisplay;
     ALLEGRO_EVENT_QUEUE* mEventQueue;
 
-    void RunGame();
+    std::unique_ptr<Options> mOptions;
 };
 

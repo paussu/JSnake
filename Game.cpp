@@ -2,13 +2,14 @@
 // Created by jipe on 5/8/21.
 //
 #include "Game.h"
+#include "Options.h"
 
 #include <chrono>
 
-Game::Game(ALLEGRO_DISPLAY* display, ALLEGRO_EVENT_QUEUE* eventQueue)
-: mDisplay(display), mEventQueue(eventQueue), mTimer(nullptr), mFont(nullptr), isRunning(true), isPaused(false)
-, mWidth(1280), mHeight(720), mRandomEngine(std::chrono::steady_clock::now().time_since_epoch().count())
-, previousTime(0), currentTime(0), mSpeed(2.0), mFontSize(64)
+Game::Game(GameConfiguration config)
+: mConfiguration(config), mDisplay(nullptr), mEventQueue(nullptr), mTimer(nullptr), mFont(nullptr), isRunning(true), isPaused(false)
+, mHudHeight(20), mRandomEngine(std::chrono::steady_clock::now().time_since_epoch().count())
+, previousTime(0), currentTime(0), mSpeed(2.0), mFontSize(20), mScore(0), mScoreText("Score: 0")
 {
     mSnake = std::make_unique<Snake>();
     mFood = std::make_unique<Food>();
@@ -21,9 +22,13 @@ bool Game::Initialize()
     al_install_keyboard();
     al_init_primitives_addon();
     al_init_ttf_addon();
-    al_set_new_display_flags(ALLEGRO_RESIZABLE);
 
-    mDisplay = al_create_display(mWidth, mHeight);
+    if(mConfiguration.Fullscreen)
+        al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+    else
+        al_set_new_display_flags(ALLEGRO_RESIZABLE);
+
+    mDisplay = al_create_display(mConfiguration.ScreenWidth, mConfiguration.ScreenHeight);
     al_set_window_title(mDisplay, "JSnake");
 
     mEventQueue = al_create_event_queue();
@@ -109,12 +114,15 @@ void Game::UpdateGame()
         const auto &timerSpeed = al_get_timer_speed(mTimer);
         if(timerSpeed > 0.001)
             al_set_timer_speed(mTimer, timerSpeed - 0.001);
+
+        mScore++;
+        mScoreText = "Score: " + std::to_string(mScore);
     }
 
-    if(mSnake->GetPosition().x > mWidth) mSnake->GetPosition().x = 0;
-    if(mSnake->GetPosition().x < 0) mSnake->GetPosition().x = mWidth;
-    if(mSnake->GetPosition().y > mHeight) mSnake->GetPosition().y = 0;
-    if(mSnake->GetPosition().y < 0) mSnake->GetPosition().y = mHeight;
+    if(mSnake->GetPosition().x > mConfiguration.ScreenWidth) mSnake->GetPosition().x = 0;
+    if(mSnake->GetPosition().x < 0) mSnake->GetPosition().x = mConfiguration.ScreenWidth;
+    if(mSnake->GetPosition().y > mConfiguration.ScreenHeight) mSnake->GetPosition().y = 0;
+    if(mSnake->GetPosition().y < 20) mSnake->GetPosition().y = mConfiguration.ScreenHeight;
 
     currentTime = al_get_timer_count(mTimer);
     if(previousTime + mSpeed < currentTime)
@@ -143,11 +151,11 @@ ALLEGRO_VERTEX Game::RandomPosition(float foodSize)
 {
     ALLEGRO_VERTEX randomVertex;
 
-    std::uniform_int_distribution<int> xDistribution {10, mWidth};
+    std::uniform_int_distribution<int> xDistribution {10, mConfiguration.ScreenWidth};
     randomVertex.x = xDistribution(mRandomEngine);
     randomVertex.x -= fmodf(randomVertex.x, foodSize);
 
-    std::uniform_int_distribution<int> yDistribution {10, mHeight};
+    std::uniform_int_distribution<int> yDistribution {10, mConfiguration.ScreenHeight};
     randomVertex.y = yDistribution(mRandomEngine);
     randomVertex.y -= fmodf(randomVertex.y, foodSize);
 
@@ -156,13 +164,15 @@ ALLEGRO_VERTEX Game::RandomPosition(float foodSize)
 
 void Game::DrawGame()
 {
+    al_draw_line(0, mHudHeight, mConfiguration.ScreenWidth, mHudHeight, al_map_rgb(255, 255, 255), 2);
+    al_draw_text(mFont, al_map_rgb(255, 255, 255), 0, 0, 0, mScoreText.c_str());
     mSnake->Draw();
     mFood->Draw();
 }
 
 void Game::DrawPauseMessage()
 {
-    al_draw_text(mFont, al_map_rgb(255, 255, 255), mWidth / 2, mHeight / 4, ALLEGRO_ALIGN_CENTER, "GAME PAUSED");
+    al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration.ScreenWidth / 2, mConfiguration.ScreenHeight / 4, ALLEGRO_ALIGN_CENTER, "GAME PAUSED");
 }
 
 

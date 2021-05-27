@@ -9,11 +9,11 @@ Snake::Snake()
 : mSnakeWidth(10.0f), mSnakeColor{.r = 255, .g = 0, .b = 0, .a = 255}, mDirection{.x = -1, .y = 0}
 {
     mSnake = std::list<ALLEGRO_VERTEX>();
-    mSnake.emplace_back(ALLEGRO_VERTEX{.x = 100, .y = 10, .color = mSnakeColor});
-    mSnake.emplace_back(ALLEGRO_VERTEX{.x = 110, .y = 10, .color = mSnakeColor});
-    mSnake.emplace_back(ALLEGRO_VERTEX{.x = 120, .y = 10, .color = mSnakeColor});
-    mSnake.emplace_back(ALLEGRO_VERTEX{.x = 130, .y = 10, .color = mSnakeColor});
-    mSnake.emplace_back(ALLEGRO_VERTEX{.x = 140, .y = 10, .color = mSnakeColor});
+    mSnake.emplace_back(ALLEGRO_VERTEX{.x = 100, .y = 40, .color = mSnakeColor});
+    mSnake.emplace_back(ALLEGRO_VERTEX{.x = 110, .y = 40, .color = mSnakeColor});
+    mSnake.emplace_back(ALLEGRO_VERTEX{.x = 120, .y = 40, .color = mSnakeColor});
+    mSnake.emplace_back(ALLEGRO_VERTEX{.x = 130, .y = 40, .color = mSnakeColor});
+    mSnake.emplace_back(ALLEGRO_VERTEX{.x = 140, .y = 40, .color = mSnakeColor});
 }
 
 void Snake::Grow()

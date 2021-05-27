@@ -8,7 +8,7 @@ Menu::Menu()
 : isRunning(true), gameStartRequested(false), showMenu(true), showOptions(false), mDisplay(nullptr)
 , mEventQueue(nullptr), clearColor(ImVec4(0.45f, 0.55f, 0.60f, 1.00f)), mWidth(1280), mHeight(720)
 {
-
+    mOptions = std::make_unique<Options>(this);
 }
 
 bool Menu::Initialize()
@@ -59,7 +59,7 @@ void Menu::RunLoop()
             // Run game
             RunGame();
 
-            // Initialize menu again
+            // Come back and initialize the menu again
             Initialize();
         }
     }
@@ -99,7 +99,7 @@ void Menu::GenerateOutput()
     ImGui::NewFrame();
 
     DrawMenu();
-    DrawOptions();
+    mOptions->Draw();
 
     // Rendering
     ImGui::Render();
@@ -118,7 +118,7 @@ void Menu::DrawMenu()
         gameStartRequested = true;
 
     if (ImGui::Button("Options", ImVec2(mWidth  / 4, 100)))
-        showOptions = true;
+        mOptions->SetShown();
 
     if (ImGui::Button("Exit", ImVec2(mWidth  / 4, 100)))
         isRunning = false;
@@ -128,7 +128,7 @@ void Menu::DrawMenu()
 
 void Menu::RunGame()
 {
-    auto game = std::make_unique<Game>(mDisplay, mEventQueue);
+    auto game = std::make_unique<Game>(mOptions->GetGameConfiguration());
     int success = game->Initialize();
     if(success)
     {
@@ -138,18 +138,13 @@ void Menu::RunGame()
     game->Shutdown();
 }
 
-void Menu::DrawOptions()
+int Menu::GetWidth() const
 {
-    if(!showOptions)
-        return;
+    return mWidth;
+}
 
-    ImGui::SetNextWindowSize(ImVec2(mWidth, mHeight - (mHeight / 4)), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowPos(ImVec2(mWidth / 4, 100));
-    ImGui::Begin("Options", NULL, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
-
-    if (ImGui::Button("Exit Options", ImVec2(mWidth  / 4, 100)))
-        showOptions = false;
-
-    ImGui::End();
+int Menu::GetHeight() const
+{
+    return mHeight;
 }
 

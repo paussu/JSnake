@@ -13,11 +13,12 @@
 
 #include "Snake.h"
 #include "Food.h"
+#include "Options.h"
 
 class Game
 {
 public:
-    Game(ALLEGRO_DISPLAY* display, ALLEGRO_EVENT_QUEUE* eventQueue);
+    explicit Game(GameConfiguration config);
     ~Game() = default;
 
     bool Initialize();
@@ -36,8 +37,10 @@ private:
     bool isRunning;
     bool isPaused;
 
-    int mWidth, mHeight;
+    GameConfiguration mConfiguration;
+    int mHudHeight;
     int mFontSize;
+    int mScore;
     int previousTime;
     int currentTime;
     double mSpeed;
@@ -46,8 +49,9 @@ private:
     ALLEGRO_EVENT_QUEUE* mEventQueue;
     ALLEGRO_FONT* mFont;
     ALLEGRO_TIMER* mTimer;
-    std::unique_ptr<class Snake> mSnake;
-    std::unique_ptr<class Food> mFood;
+    std::unique_ptr<Snake> mSnake;
+    std::unique_ptr<Food> mFood;
 
     std::default_random_engine mRandomEngine;
+    std::string mScoreText;
 };
