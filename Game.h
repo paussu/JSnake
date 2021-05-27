@@ -36,6 +36,7 @@ private:
 
     bool isRunning;
     bool isPaused;
+    bool gameLost;
 
     GameConfiguration mConfiguration;
     int mHudHeight;

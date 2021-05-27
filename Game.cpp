@@ -8,7 +8,7 @@
 
 Game::Game(GameConfiguration config)
 : mConfiguration(config), mDisplay(nullptr), mEventQueue(nullptr), mTimer(nullptr), mFont(nullptr), isRunning(true), isPaused(false)
-, mHudHeight(20), mRandomEngine(std::chrono::steady_clock::now().time_since_epoch().count())
+, gameLost(false), mHudHeight(20), mRandomEngine(std::chrono::steady_clock::now().time_since_epoch().count())
 , previousTime(0), currentTime(0), mSpeed(2.0), mFontSize(20), mScore(0), mScoreText("Score: 0")
 {
     mSnake = std::make_unique<Snake>();
@@ -52,7 +52,7 @@ void Game::RunLoop()
     {
         ProcessInput();
 
-        if(!isPaused)
+        if(!isPaused && !gameLost)
             UpdateGame();
 
         GenerateOutput();
@@ -74,6 +74,15 @@ void Game::ProcessInput()
     {
         if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
             isRunning = false;
+
+        if(gameLost)
+        {
+            if(event.type == ALLEGRO_EVENT_KEY_DOWN
+            && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+                    isRunning = false;
+
+            continue;
+        }
 
         if(event.type == ALLEGRO_EVENT_KEY_DOWN)
         {
@@ -121,8 +130,8 @@ void Game::UpdateGame()
 
     if(mSnake->GetPosition().x > mConfiguration.ScreenWidth) mSnake->GetPosition().x = 0;
     if(mSnake->GetPosition().x < 0) mSnake->GetPosition().x = mConfiguration.ScreenWidth;
-    if(mSnake->GetPosition().y > mConfiguration.ScreenHeight) mSnake->GetPosition().y = 0;
-    if(mSnake->GetPosition().y < 20) mSnake->GetPosition().y = mConfiguration.ScreenHeight;
+    if(mSnake->GetPosition().y > mConfiguration.ScreenHeight) mSnake->GetPosition().y = mHudHeight;
+    if(mSnake->GetPosition().y < mHudHeight) mSnake->GetPosition().y = mConfiguration.ScreenHeight;
 
     currentTime = al_get_timer_count(mTimer);
     if(previousTime + mSpeed < currentTime)
@@ -132,7 +141,7 @@ void Game::UpdateGame()
     }
 
     if(mSnake->CheckCollision())
-        isRunning = false;
+        gameLost = true;
 }
 
 void Game::GenerateOutput()
@@ -168,11 +177,17 @@ void Game::DrawGame()
     al_draw_text(mFont, al_map_rgb(255, 255, 255), 0, 0, 0, mScoreText.c_str());
     mSnake->Draw();
     mFood->Draw();
+
+    if(gameLost)
+    {
+        al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration.ScreenWidth / 2, mConfiguration.ScreenHeight / 4,
+                     ALLEGRO_ALIGN_CENTER, "YOU LOST");
+        al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration.ScreenWidth / 2, mConfiguration.ScreenHeight / 2, ALLEGRO_ALIGN_CENTER, "Press ESC to return to menu");
+    }
 }
 
 void Game::DrawPauseMessage()
 {
     al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration.ScreenWidth / 2, mConfiguration.ScreenHeight / 4, ALLEGRO_ALIGN_CENTER, "GAME PAUSED");
 }
-
 
