@@ -6,7 +6,7 @@
 #include "Snake.h"
 
 Snake::Snake()
-: mSnakeWidth(10.0f), mSnakeColor{.r = 255, .g = 0, .b = 0, .a = 255}, mDirection{.x = -1, .y = 0}
+: mSnakeWidth(10.0f), mSnakeColor{.r = 255, .g = 0, .b = 0, .a = 255}, mDirection{.x = -1, .y = 0}, mPreviousDirection(mDirection)
 {
     mSnake = std::list<ALLEGRO_VERTEX>();
     mSnake.emplace_back(ALLEGRO_VERTEX{.x = 100, .y = 40, .color = mSnakeColor});
@@ -32,6 +32,13 @@ void Snake::Move(float x, float y)
     if(y > 0) mDirection.y = 1;
     if(y < 0) mDirection.y = -1;
 
+    // We can't go backwards, unless we want the snake to eat itself
+    if(mDirection.x == -mPreviousDirection.x && mDirection.y == -mPreviousDirection.y)
+    {
+        mDirection = mPreviousDirection;
+        return;
+    }
+
     float lastX;
     float lastY;
     for (auto it = std::begin(mSnake), first = it, end = std::end(mSnake); it != end; ++it)
@@ -52,6 +59,8 @@ void Snake::Move(float x, float y)
         lastX = tempX;
         lastY = tempY;
     }
+
+    mPreviousDirection = mDirection;
 }
 
 void Snake::Draw()
@@ -80,6 +89,16 @@ bool Snake::CheckCollision()
         if(it == first) continue;
 
         if(it->x == head.x && it->y == head.y)
+            return true;
+    }
+    return false;
+}
+
+bool Snake::IsInside(ALLEGRO_VERTEX &position)
+{
+    for (auto it = std::begin(mSnake), end = std::end(mSnake); it != end; ++it)
+    {
+        if(it->x == position.x && it->y == position.y)
             return true;
     }
     return false;

@@ -17,6 +17,7 @@ public:
     void Move(float x, float y);
     void Draw();
     bool CheckCollision();
+    bool IsInside(ALLEGRO_VERTEX &position);
 
     ALLEGRO_VERTEX &GetPosition();
     ALLEGRO_VERTEX &GetDirection();
@@ -25,5 +26,6 @@ private:
     float mSnakeWidth;
     ALLEGRO_COLOR mSnakeColor;
     ALLEGRO_VERTEX mDirection;
+    ALLEGRO_VERTEX mPreviousDirection;
 };
 

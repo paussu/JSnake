@@ -8,7 +8,7 @@
 
 Game::Game(GameConfiguration config)
 : mConfiguration(config), mDisplay(nullptr), mEventQueue(nullptr), mTimer(nullptr), mFont(nullptr), isRunning(true), isPaused(false)
-, gameLost(false), mHudHeight(20), mRandomEngine(std::chrono::steady_clock::now().time_since_epoch().count())
+, gameLost(false), mSnakeSize(10), mHudHeight(20), mRandomEngine(std::chrono::steady_clock::now().time_since_epoch().count())
 , previousTime(0), currentTime(0), mSpeed(2.0), mFontSize(20), mScore(0), mScoreText("Score: 0")
 {
     mSnake = std::make_unique<Snake>();
@@ -29,6 +29,7 @@ bool Game::Initialize()
         al_set_new_display_flags(ALLEGRO_RESIZABLE);
 
     mDisplay = al_create_display(mConfiguration.ScreenWidth, mConfiguration.ScreenHeight);
+    al_set_window_position(mDisplay, mConfiguration.ScreenWidth / 2, mConfiguration.ScreenHeight / 2);
     al_set_window_title(mDisplay, "JSnake");
 
     mEventQueue = al_create_event_queue();
@@ -98,16 +99,16 @@ void Game::ProcessInput()
         if(event.type == ALLEGRO_EVENT_KEY_CHAR)
         {
             if(event.keyboard.keycode == ALLEGRO_KEY_UP)
-                mSnake->Move(0, -10);
+                mSnake->Move(0, -mSnakeSize);
 
             if(event.keyboard.keycode == ALLEGRO_KEY_DOWN)
-                mSnake->Move(0, 10);
+                mSnake->Move(0, mSnakeSize);
 
             if(event.keyboard.keycode == ALLEGRO_KEY_LEFT)
-                mSnake->Move(-10, 0);
+                mSnake->Move(-mSnakeSize, 0);
 
             if(event.keyboard.keycode == ALLEGRO_KEY_RIGHT)
-                mSnake->Move(10, 0);
+                mSnake->Move(mSnakeSize, 0);
         }
 
     }
@@ -117,7 +118,7 @@ void Game::UpdateGame()
 {
     if(mFood->IsEaten(mSnake->GetPosition()))
     {
-        mFood->SetPosition(RandomPosition(10));
+        mFood->SetPosition(RandomPosition(mSnakeSize));
         mSnake->Grow();
 
         const auto &timerSpeed = al_get_timer_speed(mTimer);
@@ -129,14 +130,14 @@ void Game::UpdateGame()
     }
 
     if(mSnake->GetPosition().x > mConfiguration.ScreenWidth) mSnake->GetPosition().x = 0;
-    if(mSnake->GetPosition().x < 0) mSnake->GetPosition().x = mConfiguration.ScreenWidth;
+    if(mSnake->GetPosition().x < 0) mSnake->GetPosition().x = mConfiguration.ScreenWidth - mConfiguration.ScreenWidth % mSnakeSize;
     if(mSnake->GetPosition().y > mConfiguration.ScreenHeight) mSnake->GetPosition().y = mHudHeight;
-    if(mSnake->GetPosition().y < mHudHeight) mSnake->GetPosition().y = mConfiguration.ScreenHeight;
+    if(mSnake->GetPosition().y < mHudHeight) mSnake->GetPosition().y = mConfiguration.ScreenHeight - mConfiguration.ScreenHeight % mSnakeSize;
 
     currentTime = al_get_timer_count(mTimer);
     if(previousTime + mSpeed < currentTime)
     {
-        mSnake->Move(10 * mSnake->GetDirection().x, 10 * mSnake->GetDirection().y);
+        mSnake->Move(mSnakeSize * mSnake->GetDirection().x, mSnakeSize * mSnake->GetDirection().y);
         previousTime = currentTime;
     }
 
@@ -153,6 +154,17 @@ void Game::GenerateOutput()
     else
         DrawGame();
 
+#ifdef DEBUG_MODE
+    for(int x = 0; x < mConfiguration.ScreenWidth; x += mSnakeSize)
+    {
+        al_draw_line(x, mHudHeight, x, mConfiguration.ScreenHeight, al_map_rgb(255, 0, 0), 1);
+    }
+    for(int y = mHudHeight; y < mConfiguration.ScreenHeight; y += mSnakeSize)
+    {
+        al_draw_line(0, y, mConfiguration.ScreenWidth, y, al_map_rgb(255, 0, 0), 1);
+    }
+#endif
+
     al_flip_display();
 }
 
@@ -160,13 +172,16 @@ ALLEGRO_VERTEX Game::RandomPosition(float foodSize)
 {
     ALLEGRO_VERTEX randomVertex;
 
-    std::uniform_int_distribution<int> xDistribution {10, mConfiguration.ScreenWidth};
+    std::uniform_int_distribution<int> xDistribution {0, mConfiguration.ScreenWidth};
     randomVertex.x = xDistribution(mRandomEngine);
     randomVertex.x -= fmodf(randomVertex.x, foodSize);
 
-    std::uniform_int_distribution<int> yDistribution {10, mConfiguration.ScreenHeight};
+    std::uniform_int_distribution<int> yDistribution {mHudHeight, mConfiguration.ScreenHeight};
     randomVertex.y = yDistribution(mRandomEngine);
     randomVertex.y -= fmodf(randomVertex.y, foodSize);
+
+    if(mSnake->IsInside(randomVertex))
+        return(RandomPosition(foodSize));
 
     return randomVertex;
 }
