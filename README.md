@@ -11,6 +11,7 @@ Testing Allegro and Dear Imgui with a little snake game
 - [x] Add Lose screen
 - [X] Count points
 ### Optional
+- [ ] Add Windows support
 - [ ] Improve graphics 
 
 
