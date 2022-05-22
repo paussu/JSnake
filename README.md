@@ -5,24 +5,28 @@
 Testing Allegro and Dear Imgui with a little snake game
 
 ## Todo
-- [X] Add functionality to options menu
-  - [ ] Improve menu usability and looks 
-- [x] Add Pause screen
-- [x] Add Lose screen
-- [X] Count points
-### Optional
-- [X] Improve graphics
-- [ ] Improve CMakeLists.txt and add portability
 
+-   [x] Add functionality to options menu
+    -   [ ] Improve menu usability and looks 
+-   [x] Add Pause screen
+-   [x] Add Lose screen
+-   [x] Count points
+
+### Optional
+
+-   [x] Improve graphics
+-   [ ] Improve CMakeLists.txt and add portability
 
 ### Assets
-Font: https://opengameart.org/content/font-retrospace
 
-Snake sprites: https://opengameart.org/content/snake-sprites-sound
+Font: <https://opengameart.org/content/font-retrospace>
+
+Snake sprites: <https://opengameart.org/content/snake-sprites-sound>
 
 Apple: Me with Asesprite
 
 ### Screenshots
+
 ![Screenshot of the game, sprite version](Assets/Screenshot_sprites.png)
 
 ![Screenshot of the game, spriteless version](Assets/Screenshot.png)
