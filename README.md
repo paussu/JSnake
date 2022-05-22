@@ -11,12 +11,16 @@ Testing Allegro and Dear Imgui with a little snake game
 - [x] Add Lose screen
 - [X] Count points
 ### Optional
-- [ ] Add Windows support
-- [ ] Improve graphics 
+- [X] Improve graphics
+- [ ] Improve CMakeLists.txt and add portability
 
 
 ### Assets
 Font: https://opengameart.org/content/font-retrospace
+Snake sprites: https://opengameart.org/content/snake-sprites-sound
+Apple: Me with Asesprite
 
-### Screenshot
-![Alt text](Assets/Screenshot.png)
+### Screenshots
+![Screenshot of the game, sprite version](Assets/Screenshot_sprites.png)
+
+![Screenshot of the game, spriteless version](Assets/Screenshot.png)

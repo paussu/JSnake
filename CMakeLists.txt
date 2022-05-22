@@ -15,4 +15,4 @@ LINK_DIRECTORIES(/usr/lib64/)
 
 add_executable(JSnake ${ImGUI_Sources} ${ImGUI_Headers} ${JSnake_Sources} ${JSnake_Headers})
 
-TARGET_LINK_LIBRARIES(JSnake liballegro.so liballegro_primitives.so liballegro_font.so liballegro_ttf.so)
+TARGET_LINK_LIBRARIES(JSnake liballegro.so liballegro_primitives.so liballegro_font.so liballegro_ttf.so liballegro_image.so)

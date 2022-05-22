@@ -39,7 +39,6 @@ private:
     bool gameLost;
 
     GameConfiguration mConfiguration;
-    int mSnakeSize;
     int mHudHeight;
     int mFontSize;
     int mScore;

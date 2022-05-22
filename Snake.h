@@ -6,11 +6,14 @@
 
 #include <list>
 #include <allegro5/allegro_primitives.h>
+#include <memory>
+
+#include "SnakeDrawStrategy.h"
 
 class Snake
 {
 public:
-    Snake();
+    Snake(bool useSprites = false);
     ~Snake() = default;
 
     void Grow();
@@ -21,11 +24,15 @@ public:
 
     ALLEGRO_VERTEX &GetPosition();
     ALLEGRO_VERTEX &GetDirection();
+    float GetSize();
+
 private:
-    std::list<ALLEGRO_VERTEX> mSnake;
+    std::list<SnakePart> mSnake;
     float mSnakeWidth;
     ALLEGRO_COLOR mSnakeColor;
     ALLEGRO_VERTEX mDirection;
     ALLEGRO_VERTEX mPreviousDirection;
+
+    std::unique_ptr<SnakeDrawStrategy> mDrawStrategy;
 };
 

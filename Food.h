@@ -6,11 +6,13 @@
 
 
 #include <allegro_primitives.h>
+#include "FoodDrawStrategy.h"
+#include <memory>
 
 class Food
 {
 public:
-    Food();
+    Food(bool useSprites = false);
     ~Food() = default;
 
     void Draw() const;
@@ -19,6 +21,7 @@ public:
 private:
     ALLEGRO_VERTEX mPosition;
     float mFoodSize;
+    std::unique_ptr<FoodDrawStrategy> mDrawStrategy;
 };
 
 

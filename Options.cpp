@@ -6,7 +6,7 @@
 #include "Menu.h"
 
 Options::Options(const Menu *parentMenu)
-: mParentMenu(parentMenu), isShowed(false), mGameConfiguration{1024, 768, false}
+: mParentMenu(parentMenu), isShowed(false), mGameConfiguration{1024, 768, false, true}
 , comboItems{"800x600", "1024x768", "1280x720", "1440x900", "1600x900", "1920x1080", "2560x1440"}
 , mSelectedResolution(1)
 {
@@ -26,7 +26,8 @@ void Options::Draw()
     ImGui::Begin("Options", NULL, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
 
     ImGui::Combo("Resolution", &mSelectedResolution, comboItems, IM_ARRAYSIZE(comboItems));
-    ImGui::Checkbox("Fullscreen", &mGameConfiguration.Fullscreen);
+    ImGui::Checkbox("Fullscreen", &mGameConfiguration.fullscreen);
+    ImGui::Checkbox("Use Sprites", &mGameConfiguration.sprites);
     if (ImGui::Button("Exit Options", ImVec2(parentWidth  / 4, 50)))
         isShowed = false;
 
@@ -38,41 +39,41 @@ void Options::SetShown()
     isShowed = true;
 }
 
-const GameConfiguration & Options::GetGameConfiguration()
+const GameConfiguration& Options::GetGameConfiguration()
 {
     switch (mSelectedResolution)
     {
         case GameResolution::Resolution_800x600:
-            mGameConfiguration.ScreenWidth = 800;
-            mGameConfiguration.ScreenHeight = 600;
+            mGameConfiguration.screenWidth = 800;
+            mGameConfiguration.screenHeight = 600;
             break;
         case GameResolution::Resolution_1024x768:
-            mGameConfiguration.ScreenWidth = 1024;
-            mGameConfiguration.ScreenHeight = 768;
+            mGameConfiguration.screenWidth = 1024;
+            mGameConfiguration.screenHeight = 768;
             break;
         case GameResolution::Resolution_1280x720:
-            mGameConfiguration.ScreenWidth = 1280;
-            mGameConfiguration.ScreenHeight = 720;
+            mGameConfiguration.screenWidth = 1280;
+            mGameConfiguration.screenHeight = 720;
             break;
         case GameResolution::Resolution_1440x900:
-            mGameConfiguration.ScreenWidth = 1440;
-            mGameConfiguration.ScreenHeight = 900;
+            mGameConfiguration.screenWidth = 1440;
+            mGameConfiguration.screenHeight = 900;
             break;
         case GameResolution::Resolution_1600x900:
-            mGameConfiguration.ScreenWidth = 1600;
-            mGameConfiguration.ScreenHeight = 900;
+            mGameConfiguration.screenWidth = 1600;
+            mGameConfiguration.screenHeight = 900;
             break;
         case GameResolution::Resolution_1920x1080:
-            mGameConfiguration.ScreenWidth = 1920;
-            mGameConfiguration.ScreenHeight = 1080;
+            mGameConfiguration.screenWidth = 1920;
+            mGameConfiguration.screenHeight = 1080;
             break;
         case GameResolution::Resolution_2560x1440:
-            mGameConfiguration.ScreenWidth = 2560;
-            mGameConfiguration.ScreenHeight = 1440;
+            mGameConfiguration.screenWidth = 2560;
+            mGameConfiguration.screenHeight = 1440;
             break;
         default:
-            mGameConfiguration.ScreenWidth = 1024;
-            mGameConfiguration.ScreenHeight = 768;
+            mGameConfiguration.screenWidth = 1024;
+            mGameConfiguration.screenHeight = 768;
             break;
     }
     return mGameConfiguration;
