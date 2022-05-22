@@ -17,7 +17,9 @@ Testing Allegro and Dear Imgui with a little snake game
 
 ### Assets
 Font: https://opengameart.org/content/font-retrospace
+
 Snake sprites: https://opengameart.org/content/snake-sprites-sound
+
 Apple: Me with Asesprite
 
 ### Screenshots
