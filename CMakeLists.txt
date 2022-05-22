@@ -9,10 +9,20 @@ FILE(GLOB ImGUI_Sources ImGUI/*.cpp)
 FILE(GLOB JSnake_Headers *.h)
 FILE(GLOB JSnake_Sources *.cpp)
 
-INCLUDE_DIRECTORIES(/usr/include/allegro5)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
-LINK_DIRECTORIES(/usr/lib64/)
+find_package(Allegro5 REQUIRED)
+find_package(Allegro5_Font REQUIRED)
+find_package(Allegro5_Image REQUIRED)
+find_package(Allegro5_Primitives REQUIRED)
+find_package(Allegro5_TTF REQUIRED)
+
+include_directories(
+    ${ALLEGRO5_INCLUDE_DIR}
+)
+
+LINK_DIRECTORIES (${ALLEGRO5_LIBRARY_DIRS})
 
 add_executable(JSnake ${ImGUI_Sources} ${ImGUI_Headers} ${JSnake_Sources} ${JSnake_Headers})
 
-TARGET_LINK_LIBRARIES(JSnake liballegro.so liballegro_primitives.so liballegro_font.so liballegro_ttf.so liballegro_image.so)
+TARGET_LINK_LIBRARIES(JSnake ${ALLEGRO5_LIBS})

@@ -50,14 +50,13 @@ void SpriteSnake::Draw(const std::list<SnakePart> &snake, float snakeWidth)
     const auto &snakeHead = snake.front();
     const auto &snakeTail = snake.back();
 
-    float angle = 0;
     ALLEGRO_BITMAP *sprite = nullptr;
     for(const auto &snakePart : snake)
     {
         const auto &vertex = snakePart.vertex;
         const auto isCurve = snakePart.isCurve;
 
-        angle = 0;
+        float angle = 0;
         if(vertex.u == 1)
             angle = ANGLE_RIGHT;
         else if(vertex.u == -1)

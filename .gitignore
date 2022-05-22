@@ -31,8 +31,11 @@
 *.out
 *.app
 
+/build
 /cmake-build-debug
 /.idea
+/.vscode
+/.cache
 
 .ccls
 CPPLINT.cfg
