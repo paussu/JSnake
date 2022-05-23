@@ -11,15 +11,15 @@
 #include <memory>
 #include <random>
 
-#include "Snake.h"
-#include "Food.h"
-#include "Options.h"
+struct GameConfiguration;
+class Food;
+class Snake;
 
 class Game
 {
 public:
-    explicit Game(GameConfiguration config);
-    ~Game() = default;
+    explicit Game(const GameConfiguration* config);
+    ~Game();
 
     bool Initialize();
     void RunLoop();
@@ -38,7 +38,7 @@ private:
     bool isPaused;
     bool gameLost;
 
-    GameConfiguration mConfiguration;
+    const GameConfiguration* mConfiguration;
     int mHudHeight;
     int mFontSize;
     int mScore;

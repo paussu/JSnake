@@ -6,8 +6,6 @@ constexpr float ANGLE_RIGHT = 0;
 constexpr float ANGLE_UP = (3 * ALLEGRO_PI) / 2;
 constexpr float ANGLE_DOWN = ALLEGRO_PI / 2;
 
-ALLEGRO_VERTEX previousVertex;
-
 bool operator==(const ALLEGRO_VERTEX &vertex1, const ALLEGRO_VERTEX &vertex2)
 {
     return vertex1.color.a == vertex2.color.a 
@@ -53,17 +51,17 @@ void SpriteSnake::Draw(const std::list<SnakePart> &snake, float snakeWidth)
     ALLEGRO_BITMAP *sprite = nullptr;
     for(const auto &snakePart : snake)
     {
-        const auto &vertex = snakePart.vertex;
+        const auto &direction = snakePart.direction;
         const auto isCurve = snakePart.isCurve;
 
         float angle = 0;
-        if(vertex.u == 1)
+        if(direction == SnakeDirection::RIGHT)
             angle = ANGLE_RIGHT;
-        else if(vertex.u == -1)
+        if(direction == SnakeDirection::LEFT)
             angle = ANGLE_LEFT;
-        else if(vertex.v == 1)
+        if(direction == SnakeDirection::DOWN)
             angle = ANGLE_DOWN;
-        else if(vertex.v == -1)
+        if(direction == SnakeDirection::UP)
             angle = ANGLE_UP;
 
         if(snakePart == snake.front())
@@ -73,15 +71,15 @@ void SpriteSnake::Draw(const std::list<SnakePart> &snake, float snakeWidth)
             sprite = mTailSprite;
 
             auto previousPart = std::prev(snake.end(), 2);
-            auto prevVertex = previousPart->vertex;
+            auto prevDirection = previousPart->direction;
 
-            if(prevVertex.u == 1)
+            if(prevDirection == SnakeDirection::RIGHT)
                 angle = ANGLE_RIGHT;
-            else if(prevVertex.u == -1)
+            if(prevDirection == SnakeDirection::LEFT)
                 angle = ANGLE_LEFT;
-            else if(prevVertex.v == 1)
+            if(prevDirection == SnakeDirection::DOWN)
                 angle = ANGLE_DOWN;
-            else if(prevVertex.v == -1)
+            if(prevDirection == SnakeDirection::UP)
                 angle = ANGLE_UP;
         }
         else if(isCurve)
@@ -96,6 +94,6 @@ void SpriteSnake::Draw(const std::list<SnakePart> &snake, float snakeWidth)
         else
             sprite = mBodySprite;
 
-        al_draw_rotated_bitmap(sprite, 16, 16, vertex.x, vertex.y, angle, 0);
+        al_draw_rotated_bitmap(sprite, 16, 16, snakePart.vertex.x, snakePart.vertex.y, angle, 0);
     }
 }

@@ -19,11 +19,11 @@ Snake::Snake(bool useSprites)
         mDrawStrategy = std::make_unique<PlainSnake>();
 
     mSnake = std::list<SnakePart>();
-    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 4, .y = mSnakeWidth, .u = -1, .v = 0, .color = mSnakeColor}, false});
-    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 5, .y = mSnakeWidth, .u = -1, .v = 0, .color = mSnakeColor}, false});
-    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 6, .y = mSnakeWidth, .u = -1, .v = 0, .color = mSnakeColor}, false});
-    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 7, .y = mSnakeWidth, .u = -1, .v = 0, .color = mSnakeColor}, false});
-    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 8, .y = mSnakeWidth, .u = -1, .v = 0, .color = mSnakeColor}, false});
+    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 4, .y = mSnakeWidth, .color = mSnakeColor}, false, false, .direction = SnakeDirection::LEFT});
+    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 5, .y = mSnakeWidth, .color = mSnakeColor}, false, false, .direction = SnakeDirection::LEFT});
+    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 6, .y = mSnakeWidth, .color = mSnakeColor}, false, false, .direction = SnakeDirection::LEFT});
+    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 7, .y = mSnakeWidth, .color = mSnakeColor}, false, false, .direction = SnakeDirection::LEFT});
+    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 8, .y = mSnakeWidth, .color = mSnakeColor}, false, false, .direction = SnakeDirection::LEFT});
 }
 
 void Snake::Grow()
@@ -34,17 +34,31 @@ void Snake::Grow()
 
 void Snake::Move(float x, float y)
 {
+    SnakeDirection direction;
+
     mDirection.x = 0;
     mDirection.y = 0;
 
     if(x > 0)
+    {
         mDirection.x = 1;
+        direction = SnakeDirection::RIGHT;
+    }
     if(x < 0)
+    {
         mDirection.x = -1;
+        direction = SnakeDirection::LEFT;
+    }
     if(y > 0)
+    {
         mDirection.y = 1;
+        direction = SnakeDirection::DOWN;
+    }
     if(y < 0)
+    {
         mDirection.y = -1;
+        direction = SnakeDirection::UP;
+    }
 
     // We can't go backwards, unless we want the snake to eat itself
     if(mDirection.x == -mPreviousDirection.x && mDirection.y == -mPreviousDirection.y)
@@ -87,8 +101,7 @@ void Snake::Move(float x, float y)
     float lastX;
     float lastY;
 
-    float lastU;
-    float lastV;
+    SnakeDirection lastDirection;
     bool lastCurve;
     bool lastInvertedCurve;
     for (auto it = std::begin(mSnake), first = it, end = std::end(mSnake); it != end; ++it)
@@ -97,8 +110,7 @@ void Snake::Move(float x, float y)
         float tempX = it->vertex.x;
         float tempY = it->vertex.y;
 
-        float tempU = it->vertex.u;
-        float tempV = it->vertex.v;
+        SnakeDirection tempDirection = it->direction;
 
         bool tempCurve = it->isCurve;
         bool tempInvertedCurve = it->isInvertedCurve;
@@ -107,8 +119,7 @@ void Snake::Move(float x, float y)
             it->vertex.x += x;
             it->vertex.y += y;
 
-            it->vertex.u = mDirection.x;
-            it->vertex.v = mDirection.y;
+            it->direction = direction;
 
             it->isCurve = false;
             it->isInvertedCurve = false;
@@ -118,8 +129,7 @@ void Snake::Move(float x, float y)
             it->vertex.x = lastX;
             it->vertex.y = lastY;
 
-            it->vertex.u = lastU;
-            it->vertex.v = lastV;
+            it->direction = lastDirection;
 
             it->isCurve = lastCurve;
             it->isInvertedCurve = lastInvertedCurve;
@@ -127,8 +137,7 @@ void Snake::Move(float x, float y)
         lastX = tempX;
         lastY = tempY;
 
-        lastU = tempU;
-        lastV = tempV;
+        lastDirection = tempDirection;
 
         lastCurve = tempCurve;
         lastInvertedCurve = tempInvertedCurve;
@@ -155,24 +164,19 @@ ALLEGRO_VERTEX &Snake::GetDirection()
 bool Snake::CheckCollision()
 {
     auto &head = mSnake.front();
-    for (auto it = std::begin(mSnake), first = it, end = std::end(mSnake); it != end; ++it)
-    {
-        if(it == first) continue;
 
-        if(it->vertex.x == head.vertex.x && it->vertex.y == head.vertex.y)
-            return true;
-    }
-    return false;
+    return std::any_of(std::next(mSnake.begin()), mSnake.end(), [&head](const SnakePart &snakePart)
+    {
+        return snakePart.vertex.x == head.vertex.x && snakePart.vertex.y == head.vertex.y;
+    });
 }
 
 bool Snake::IsInside(ALLEGRO_VERTEX &position)
 {
-    for (auto it = std::begin(mSnake), end = std::end(mSnake); it != end; ++it)
+    return std::any_of(mSnake.begin(), mSnake.end(), [&position](const SnakePart &snakePart)
     {
-        if(it->vertex.x == position.x && it->vertex.y == position.y)
-            return true;
-    }
-    return false;
+        return snakePart.vertex.x == position.x && snakePart.vertex.y == position.y;
+    });
 }
 
 float Snake::GetSize()

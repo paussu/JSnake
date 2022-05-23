@@ -129,7 +129,7 @@ void Menu::DrawMenu()
 
 void Menu::RunGame()
 {
-    auto game = std::make_unique<Game>(mOptions->GetGameConfiguration());
+    auto game = std::make_unique<Game>(&mOptions->GetGameConfiguration());
     int success = game->Initialize();
     if(success)
     {

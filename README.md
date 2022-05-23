@@ -11,11 +11,12 @@ Testing Allegro and Dear Imgui with a little snake game
 -   [x] Add Pause screen
 -   [x] Add Lose screen
 -   [x] Count points
+-   [ ] Cleanup code
 
 ### Optional
 
 -   [x] Improve graphics
--   [ ] Improve CMakeLists.txt and add portability
+-   [x] Improve CMakeLists.txt and add portability
 
 ### Assets
 

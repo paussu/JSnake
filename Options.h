@@ -8,7 +8,7 @@ struct GameConfiguration
 {
     int screenWidth, screenHeight;
     bool fullscreen;
-    bool sprites;
+    bool useSprites;
 };
 
 enum GameResolution

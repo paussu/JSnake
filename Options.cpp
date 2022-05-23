@@ -27,7 +27,7 @@ void Options::Draw()
 
     ImGui::Combo("Resolution", &mSelectedResolution, comboItems, IM_ARRAYSIZE(comboItems));
     ImGui::Checkbox("Fullscreen", &mGameConfiguration.fullscreen);
-    ImGui::Checkbox("Use Sprites", &mGameConfiguration.sprites);
+    ImGui::Checkbox("Use Sprites", &mGameConfiguration.useSprites);
     if (ImGui::Button("Exit Options", ImVec2(parentWidth  / 4, 50)))
         isShowed = false;
 
