@@ -7,7 +7,7 @@
 Food::Food(bool useSprites)
 : mFoodSize(16.0f)
 {
-    if(useSprites)
+    if (useSprites)
     {
         mDrawStrategy = std::make_unique<SpriteFood>();
         mFoodSize = 32.0f;

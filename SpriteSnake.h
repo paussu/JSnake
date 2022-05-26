@@ -4,16 +4,17 @@
 
 class SpriteSnake : public SnakeDrawStrategy
 {
-public:
+ public:
     SpriteSnake();
     ~SpriteSnake();
 
     void Draw(const std::list<SnakePart> &snake, float snakeWidth) override;
 
-private:
+ private:
     ALLEGRO_BITMAP* mHeadSprite;
     ALLEGRO_BITMAP* mBodySprite;
     ALLEGRO_BITMAP* mCurveSprite;
     ALLEGRO_BITMAP* mInvertedCurveSprite;
     ALLEGRO_BITMAP* mTailSprite;
 };
+

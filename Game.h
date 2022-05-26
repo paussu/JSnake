@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <random>
+#include <string>
 
 struct GameConfiguration;
 class Food;
@@ -17,7 +18,7 @@ class Snake;
 
 class Game
 {
-public:
+ public:
     explicit Game(const GameConfiguration* config);
     ~Game();
 
@@ -25,7 +26,7 @@ public:
     void RunLoop();
     void Shutdown();
 
-private:
+ private:
     void ProcessInput();
     void UpdateGame();
     void GenerateOutput();

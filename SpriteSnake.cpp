@@ -8,7 +8,7 @@ constexpr float ANGLE_DOWN = ALLEGRO_PI / 2;
 
 bool operator==(const ALLEGRO_VERTEX &vertex1, const ALLEGRO_VERTEX &vertex2)
 {
-    return vertex1.color.a == vertex2.color.a 
+    return vertex1.color.a == vertex2.color.a
     && vertex1.color.r == vertex2.color.r
     && vertex1.color.b == vertex2.color.b
     && vertex1.color.g == vertex2.color.g
@@ -17,7 +17,6 @@ bool operator==(const ALLEGRO_VERTEX &vertex1, const ALLEGRO_VERTEX &vertex2)
     && vertex1.x == vertex2.x
     && vertex1.y == vertex2.y
     && vertex1.z == vertex2.z;
-
 }
 
 bool operator==(const SnakePart &part1, const SnakePart &part2)
@@ -49,43 +48,43 @@ void SpriteSnake::Draw(const std::list<SnakePart> &snake, float snakeWidth)
     const auto &snakeTail = snake.back();
 
     ALLEGRO_BITMAP *sprite = nullptr;
-    for(const auto &snakePart : snake)
+    for (const auto &snakePart : snake)
     {
         const auto &direction = snakePart.direction;
         const auto isCurve = snakePart.isCurve;
 
         float angle = 0;
-        if(direction == SnakeDirection::RIGHT)
+        if (direction == SnakeDirection::RIGHT)
             angle = ANGLE_RIGHT;
-        if(direction == SnakeDirection::LEFT)
+        if (direction == SnakeDirection::LEFT)
             angle = ANGLE_LEFT;
-        if(direction == SnakeDirection::DOWN)
+        if (direction == SnakeDirection::DOWN)
             angle = ANGLE_DOWN;
-        if(direction == SnakeDirection::UP)
+        if (direction == SnakeDirection::UP)
             angle = ANGLE_UP;
 
-        if(snakePart == snake.front())
+        if (snakePart == snake.front())
             sprite = mHeadSprite;
-        else if(snakePart == snake.back())
+        else if (snakePart == snake.back())
         {
             sprite = mTailSprite;
 
             auto previousPart = std::prev(snake.end(), 2);
             auto prevDirection = previousPart->direction;
 
-            if(prevDirection == SnakeDirection::RIGHT)
+            if (prevDirection == SnakeDirection::RIGHT)
                 angle = ANGLE_RIGHT;
-            if(prevDirection == SnakeDirection::LEFT)
+            if (prevDirection == SnakeDirection::LEFT)
                 angle = ANGLE_LEFT;
-            if(prevDirection == SnakeDirection::DOWN)
+            if (prevDirection == SnakeDirection::DOWN)
                 angle = ANGLE_DOWN;
-            if(prevDirection == SnakeDirection::UP)
+            if (prevDirection == SnakeDirection::UP)
                 angle = ANGLE_UP;
         }
-        else if(isCurve)
+        else if (isCurve)
         {
             sprite = mCurveSprite;
-            if(snakePart.isInvertedCurve)
+            if (snakePart.isInvertedCurve)
             {
                 sprite = mInvertedCurveSprite;
                 angle += ALLEGRO_PI;

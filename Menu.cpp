@@ -45,12 +45,12 @@ bool Menu::Initialize()
 
 void Menu::RunLoop()
 {
-    while(isRunning)
+    while (isRunning)
     {
         ProcessInput();
         GenerateOutput();
 
-        if(gameStartRequested)
+        if (gameStartRequested)
         {
             gameStartRequested = false;
 
@@ -111,17 +111,17 @@ void Menu::GenerateOutput()
 
 void Menu::DrawMenu()
 {
-    ImGui::SetNextWindowSize(ImVec2(mWidth  / 4, mHeight - (mHeight / 2)), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowPos(ImVec2(mWidth / 3, 100));
+    ImGui::SetNextWindowSize(ImVec2(mWidth  / 4.0, mHeight - (mHeight / 2.0)), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(mWidth / 3.0, 100));
     ImGui::Begin("Start menu", NULL, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
 
-    if (ImGui::Button("Play", ImVec2(mWidth  / 4, 100)))
+    if (ImGui::Button("Play", ImVec2(mWidth  / 4.0, 100)))
         gameStartRequested = true;
 
-    if (ImGui::Button("Options", ImVec2(mWidth  / 4, 100)))
+    if (ImGui::Button("Options", ImVec2(mWidth  / 4.0, 100)))
         mOptions->SetShown();
 
-    if (ImGui::Button("Exit", ImVec2(mWidth  / 4, 100)))
+    if (ImGui::Button("Exit", ImVec2(mWidth  / 4.0, 100)))
         isRunning = false;
 
     ImGui::End();
@@ -131,7 +131,7 @@ void Menu::RunGame()
 {
     auto game = std::make_unique<Game>(&mOptions->GetGameConfiguration());
     int success = game->Initialize();
-    if(success)
+    if (success)
     {
         game->RunLoop();
     }

@@ -4,16 +4,16 @@
 
 #pragma once
 
-#include <list>
 #include <allegro5/allegro_primitives.h>
+#include <list>
 #include <memory>
 
 #include "SnakeDrawStrategy.h"
 
 class Snake
 {
-public:
-    Snake(bool useSprites = false);
+ public:
+    explicit Snake(bool useSprites = false);
     ~Snake() = default;
 
     void Grow();
@@ -26,7 +26,7 @@ public:
     ALLEGRO_VERTEX &GetDirection();
     float GetSize();
 
-private:
+ private:
     std::list<SnakePart> mSnake;
     float mSnakeWidth;
     ALLEGRO_COLOR mSnakeColor;

@@ -29,7 +29,7 @@ bool Game::Initialize()
     al_init_ttf_addon();
     al_init_image_addon();
 
-    if(mConfiguration->fullscreen)
+    if (mConfiguration->fullscreen)
         al_set_new_display_flags(ALLEGRO_FULLSCREEN);
     else
         al_set_new_display_flags(ALLEGRO_RESIZABLE);
@@ -44,7 +44,7 @@ bool Game::Initialize()
     al_register_event_source(mEventQueue, al_get_mouse_event_source());
 
     mFont = al_load_ttf_font("../Assets/RETRO_SPACE_INV.ttf", mFontSize, 0);
-    if(mFont == nullptr)
+    if (mFont == nullptr)
         return false;
 
     mTimer = al_create_timer(0.1);
@@ -62,7 +62,7 @@ void Game::RunLoop()
     {
         ProcessInput();
 
-        if(!isPaused && !gameLost)
+        if (!isPaused && !gameLost)
             UpdateGame();
 
         GenerateOutput();
@@ -85,79 +85,85 @@ void Game::ProcessInput()
         if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
             isRunning = false;
 
-        if(gameLost)
+        if (gameLost)
         {
-            if(event.type == ALLEGRO_EVENT_KEY_DOWN
+            if (event.type == ALLEGRO_EVENT_KEY_DOWN
             && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
                     isRunning = false;
 
             continue;
         }
 
-        if(event.type == ALLEGRO_EVENT_KEY_DOWN)
+        if (event.type == ALLEGRO_EVENT_KEY_DOWN)
         {
-            if(event.keyboard.keycode == ALLEGRO_KEY_P)
+            if (event.keyboard.keycode == ALLEGRO_KEY_P)
                 isPaused = !isPaused;
 
-            if(event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+            if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
                 isRunning = false;
         }
 
-        if(isPaused) return;
+        if (isPaused)
+            return;
 
-        if(event.type == ALLEGRO_EVENT_KEY_CHAR)
+        if (event.type == ALLEGRO_EVENT_KEY_CHAR)
         {
-            if(event.keyboard.keycode == ALLEGRO_KEY_UP)
+            switch (event.keyboard.keycode)
+            {
+            case ALLEGRO_KEY_UP:
                 mSnake->Move(0, -mSnake->GetSize());
-
-            if(event.keyboard.keycode == ALLEGRO_KEY_DOWN)
+                break;
+            case ALLEGRO_KEY_DOWN:
                 mSnake->Move(0, mSnake->GetSize());
-
-            if(event.keyboard.keycode == ALLEGRO_KEY_LEFT)
+                break;
+            case ALLEGRO_KEY_LEFT:
                 mSnake->Move(-mSnake->GetSize(), 0);
-
-            if(event.keyboard.keycode == ALLEGRO_KEY_RIGHT)
+                break;
+            case ALLEGRO_KEY_RIGHT:
                 mSnake->Move(mSnake->GetSize(), 0);
+                break;
+            default:
+                break;
+            }
         }
-
     }
 }
 
 void Game::UpdateGame()
 {
-    if(mFood->IsEaten(mSnake->GetPosition()))
+    if (mFood->IsEaten(mSnake->GetPosition()))
     {
         mFood->SetPosition(RandomPosition(mSnake->GetSize()));
         mSnake->Grow();
 
         const auto &timerSpeed = al_get_timer_speed(mTimer);
-        if(timerSpeed > 0.001)
+        if (timerSpeed > 0.001)
             al_set_timer_speed(mTimer, timerSpeed - 0.001);
 
         mScore++;
         mScoreText = "Score: " + std::to_string(mScore);
     }
 
-    if(mSnake->GetPosition().x > mConfiguration->screenWidth)
+    if (mSnake->GetPosition().x > mConfiguration->screenWidth)
         mSnake->GetPosition().x = 0;
 
-    if(mSnake->GetPosition().x < 0)
-        mSnake->GetPosition().x = mConfiguration->screenWidth - mConfiguration->screenWidth % (int)mSnake->GetSize();
+    if (mSnake->GetPosition().x < 0)
+        mSnake->GetPosition().x = mConfiguration->screenWidth - mConfiguration->screenWidth % static_cast<int>(mSnake->GetSize());
 
-    if(mSnake->GetPosition().y > mConfiguration->screenHeight)
+    if (mSnake->GetPosition().y > mConfiguration->screenHeight)
         mSnake->GetPosition().y = mHudHeight;
 
-    if(mSnake->GetPosition().y < mHudHeight)
-        mSnake->GetPosition().y = mConfiguration->screenHeight - mConfiguration->screenHeight % (int)mSnake->GetSize();
+    if (mSnake->GetPosition().y < mHudHeight)
+        mSnake->GetPosition().y = mConfiguration->screenHeight - mConfiguration->screenHeight % static_cast<int>(mSnake->GetSize());
 
     currentTime = al_get_timer_count(mTimer);
-    if(previousTime + mSpeed < currentTime)
+    if (previousTime + mSpeed < currentTime)
     {
         mSnake->Move(mSnake->GetSize() * mSnake->GetDirection().x, mSnake->GetSize() * mSnake->GetDirection().y);
         previousTime = currentTime;
     }
 
-    if(mSnake->CheckCollision())
+    if (mSnake->CheckCollision())
         gameLost = true;
 }
 
@@ -165,7 +171,7 @@ void Game::GenerateOutput()
 {
     al_clear_to_color(ALLEGRO_COLOR{.r = 0, .g = 0, .b = 0, .a = 0});
 
-    if(isPaused)
+    if (isPaused)
         DrawPauseMessage();
     else
         DrawGame();
@@ -196,7 +202,7 @@ ALLEGRO_VERTEX Game::RandomPosition(float foodSize)
     randomVertex.y = yDistribution(mRandomEngine);
     randomVertex.y -= fmodf(randomVertex.y, foodSize);
 
-    if(mSnake->IsInside(randomVertex))
+    if (mSnake->IsInside(randomVertex))
         return(RandomPosition(foodSize));
 
     return randomVertex;
@@ -209,16 +215,16 @@ void Game::DrawGame()
     mSnake->Draw();
     mFood->Draw();
 
-    if(gameLost)
+    if (gameLost)
     {
-        al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration->screenWidth / 2, mConfiguration->screenHeight / 4,
+        al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration->screenWidth / 2.0, mConfiguration->screenHeight / 4.0,
                      ALLEGRO_ALIGN_CENTER, "YOU LOST");
-        al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration->screenWidth / 2, mConfiguration->screenHeight / 2, ALLEGRO_ALIGN_CENTER, "Press ESC to return to menu");
+        al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration->screenWidth / 2.0, mConfiguration->screenHeight / 2.0, ALLEGRO_ALIGN_CENTER, "Press ESC to return to menu");
     }
 }
 
 void Game::DrawPauseMessage()
 {
-    al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration->screenWidth / 2, mConfiguration->screenHeight / 4, ALLEGRO_ALIGN_CENTER, "GAME PAUSED");
+    al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration->screenWidth / 2.0, mConfiguration->screenHeight / 4.0, ALLEGRO_ALIGN_CENTER, "GAME PAUSED");
 }
 

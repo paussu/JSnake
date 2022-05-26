@@ -24,7 +24,7 @@ enum GameResolution
 
 class Options
 {
-public:
+ public:
     explicit Options(const class Menu* parentMenu);
     ~Options() = default;
 
@@ -33,7 +33,7 @@ public:
 
     [[nodiscard]] const GameConfiguration & GetGameConfiguration();
 
-private:
+ private:
     const class Menu* mParentMenu;
     bool isShowed;
     int mSelectedResolution;

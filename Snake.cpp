@@ -2,15 +2,15 @@
 // Created by jipe on 5/8/21.
 //
 
-#include <ranges>
 #include "Snake.h"
 #include "PlainSnake.h"
 #include "SpriteSnake.h"
+#include <ranges>
 
 Snake::Snake(bool useSprites)
 : mSnakeWidth(16.0f), mSnakeColor{.r = 255, .g = 0, .b = 0, .a = 255}, mDirection{.x = -1, .y = 0}, mPreviousDirection(mDirection)
 {
-    if(useSprites)
+    if (useSprites)
     {
         mDrawStrategy = std::make_unique<SpriteSnake>();
         mSnakeWidth = 32.0f;
@@ -39,62 +39,62 @@ void Snake::Move(float x, float y)
     mDirection.x = 0;
     mDirection.y = 0;
 
-    if(x > 0)
+    if (x > 0)
     {
         mDirection.x = 1;
         direction = SnakeDirection::RIGHT;
     }
-    if(x < 0)
+    if (x < 0)
     {
         mDirection.x = -1;
         direction = SnakeDirection::LEFT;
     }
-    if(y > 0)
+    if (y > 0)
     {
         mDirection.y = 1;
         direction = SnakeDirection::DOWN;
     }
-    if(y < 0)
+    if (y < 0)
     {
         mDirection.y = -1;
         direction = SnakeDirection::UP;
     }
 
     // We can't go backwards, unless we want the snake to eat itself
-    if(mDirection.x == -mPreviousDirection.x && mDirection.y == -mPreviousDirection.y)
+    if (mDirection.x == -mPreviousDirection.x && mDirection.y == -mPreviousDirection.y)
     {
         mDirection = mPreviousDirection;
         return;
     }
     // Check if we are turning
-    else if(mDirection.x - mPreviousDirection.x != 0 || mDirection.y - mPreviousDirection.y != 0)
+    else if (mDirection.x - mPreviousDirection.x != 0 || mDirection.y - mPreviousDirection.y != 0)
     {
         auto curvePart = mSnake.begin();
         curvePart->isCurve = true;
 
-        if(mPreviousDirection.x == 1 && mDirection.y == -1)
+        if (mPreviousDirection.x == 1 && mDirection.y == -1)
             curvePart->isInvertedCurve = true;
 
-        if(mPreviousDirection.y == -1 && mDirection.x == -1)
+        if (mPreviousDirection.y == -1 && mDirection.x == -1)
             curvePart->isInvertedCurve = true;
 
-        if(mPreviousDirection.x == -1 && mDirection.y == 1)
+        if (mPreviousDirection.x == -1 && mDirection.y == 1)
             curvePart->isInvertedCurve = true;
 
-        if(mPreviousDirection.y == 1 && mDirection.x == 1)
+        if (mPreviousDirection.y == 1 && mDirection.x == 1)
             curvePart->isInvertedCurve = true;
 
 
-        if(mPreviousDirection.x == 1 && mDirection.y == 1)
+        if (mPreviousDirection.x == 1 && mDirection.y == 1)
             curvePart->isInvertedCurve = false;
 
-        if(mPreviousDirection.y == -1 && mDirection.x == 1)
+        if (mPreviousDirection.y == -1 && mDirection.x == 1)
             curvePart->isInvertedCurve = false;
 
-        if(mPreviousDirection.x == -1 && mDirection.y == -1)
+        if (mPreviousDirection.x == -1 && mDirection.y == -1)
             curvePart->isInvertedCurve = false;
 
-        if(mPreviousDirection.y == 1 && mDirection.x == -1)
+        if (mPreviousDirection.y == 1 && mDirection.x == -1)
             curvePart->isInvertedCurve = false;
     }
 
@@ -114,7 +114,7 @@ void Snake::Move(float x, float y)
 
         bool tempCurve = it->isCurve;
         bool tempInvertedCurve = it->isInvertedCurve;
-        if(it == first)
+        if (it == first)
         {
             it->vertex.x += x;
             it->vertex.y += y;

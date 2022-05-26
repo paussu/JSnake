@@ -11,14 +11,14 @@
 
 class Food
 {
-public:
-    Food(bool useSprites = false);
+ public:
+    explicit Food(bool useSprites = false);
     ~Food() = default;
 
     void Draw() const;
     void SetPosition(ALLEGRO_VERTEX newPosition);
     bool IsEaten(ALLEGRO_VERTEX &snakePosition) const;
-private:
+ private:
     ALLEGRO_VERTEX mPosition;
     float mFoodSize;
     std::unique_ptr<FoodDrawStrategy> mDrawStrategy;

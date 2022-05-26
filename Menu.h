@@ -14,7 +14,7 @@
 
 class Menu
 {
-public:
+ public:
     Menu();
     ~Menu() = default;
 
@@ -28,7 +28,7 @@ public:
 
     [[nodiscard]] int GetHeight() const;
 
-private:
+ private:
     void ProcessInput();
     void DrawMenu();
     void DrawOptions();

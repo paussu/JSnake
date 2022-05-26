@@ -4,6 +4,7 @@
 
 class PlainSnake : public SnakeDrawStrategy
 {
-public:
+ public:
     void Draw(const std::list<SnakePart> &snake, float snakeWidth) override;
 };
+

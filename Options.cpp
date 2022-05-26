@@ -10,25 +10,24 @@ Options::Options(const Menu *parentMenu)
 , comboItems{"800x600", "1024x768", "1280x720", "1440x900", "1600x900", "1920x1080", "2560x1440"}
 , mSelectedResolution(1)
 {
-
 }
 
 void Options::Draw()
 {
-    if(!isShowed)
+    if (!isShowed)
         return;
 
     const auto &parentWidth = mParentMenu->GetWidth();
     const auto &parentHeight = mParentMenu->GetHeight();
 
-    ImGui::SetNextWindowSize(ImVec2(parentWidth, parentHeight - (parentHeight / 4)), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowPos(ImVec2(parentWidth / 4, 100));
+    ImGui::SetNextWindowSize(ImVec2(parentWidth, parentHeight - (parentHeight / 4.0)), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(parentWidth / 4.0, 100));
     ImGui::Begin("Options", NULL, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
 
     ImGui::Combo("Resolution", &mSelectedResolution, comboItems, IM_ARRAYSIZE(comboItems));
     ImGui::Checkbox("Fullscreen", &mGameConfiguration.fullscreen);
     ImGui::Checkbox("Use Sprites", &mGameConfiguration.useSprites);
-    if (ImGui::Button("Exit Options", ImVec2(parentWidth  / 4, 50)))
+    if (ImGui::Button("Exit Options", ImVec2(parentWidth  / 4.0, 50)))
         isShowed = false;
 
     ImGui::End();
