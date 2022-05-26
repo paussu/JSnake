@@ -46,13 +46,13 @@ void Hiscores::LoadFromFile()
     std::string line;
 
     scoreFile.open("../Hiscores.score");
-    if(!scoreFile.is_open())
+    if (!scoreFile.is_open())
     {
         return;
     }
 
     std::pair<std::string, int> score;
-    while(getline(scoreFile, line, '\n'))
+    while (getline(scoreFile, line, '\n'))
     {
         const auto delimiterPos = line.find(";");
         const auto &playerName = line.substr(0, line.find(";"));
@@ -73,7 +73,7 @@ void Hiscores::SaveScore(const std::string &playerName, int score)
     std::string line;
 
     scoreFile.open("../Hiscores.score", std::ios_base::app);
-    if(!scoreFile.is_open())
+    if (!scoreFile.is_open())
     {
         perror("Failed to open file");
         return;

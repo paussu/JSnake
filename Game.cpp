@@ -179,11 +179,11 @@ void Game::GenerateOutput()
         DrawGame();
 
 #ifdef DEBUG_MODE
-    for(int x = 0; x < mConfiguration->screenWidth; x += mSnake->GetSize())
+    for (int x = 0; x < mConfiguration->screenWidth; x += mSnake->GetSize())
     {
         al_draw_line(x, mHudHeight, x, mConfiguration->screenHeight, al_map_rgb(255, 0, 0), 1);
     }
-    for(int y = 0; y < mConfiguration->screenHeight; y += mSnake->GetSize())
+    for (int y = 0; y < mConfiguration->screenHeight; y += mSnake->GetSize())
     {
         al_draw_line(0, y, mConfiguration->screenWidth, y, al_map_rgb(255, 0, 0), 1);
     }
@@ -196,11 +196,11 @@ ALLEGRO_VERTEX Game::RandomPosition(float foodSize)
 {
     ALLEGRO_VERTEX randomVertex;
 
-    std::uniform_int_distribution<int> xDistribution {(int)foodSize, mConfiguration->screenWidth};
+    std::uniform_int_distribution<int> xDistribution {static_cast<int>(foodSize), mConfiguration->screenWidth};
     randomVertex.x = xDistribution(mRandomEngine);
     randomVertex.x -= fmodf(randomVertex.x, foodSize);
 
-    std::uniform_int_distribution<int> yDistribution {mHudHeight + (int)foodSize, mConfiguration->screenHeight};
+    std::uniform_int_distribution<int> yDistribution {mHudHeight + static_cast<int>(foodSize), mConfiguration->screenHeight};
     randomVertex.y = yDistribution(mRandomEngine);
     randomVertex.y -= fmodf(randomVertex.y, foodSize);
 
