@@ -25,6 +25,8 @@ class Game
     bool Initialize();
     void RunLoop();
     void Shutdown();
+    int GetScore();
+    std::string GetPlayerName();
 
  private:
     void ProcessInput();
@@ -32,6 +34,7 @@ class Game
     void GenerateOutput();
     void DrawGame();
     void DrawPauseMessage();
+    void GameOverScreen();
 
     ALLEGRO_VERTEX RandomPosition(float foodSize);
 
@@ -56,4 +59,5 @@ class Game
 
     std::default_random_engine mRandomEngine;
     std::string mScoreText;
+    std::string mPlayerName;
 };

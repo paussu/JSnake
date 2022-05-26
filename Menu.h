@@ -10,22 +10,21 @@
 
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_allegro5.h"
-#include "Options.h"
+
+class Hiscores;
+class Options;
 
 class Menu
 {
  public:
     Menu();
-    ~Menu() = default;
+    ~Menu();
 
     bool Initialize();
-
     void RunLoop();
-
     void Shutdown();
 
     [[nodiscard]] int GetWidth() const;
-
     [[nodiscard]] int GetHeight() const;
 
  private:
@@ -47,5 +46,6 @@ class Menu
     ALLEGRO_EVENT_QUEUE* mEventQueue;
 
     std::unique_ptr<Options> mOptions;
+    std::unique_ptr<Hiscores> mHiscores;
 };
 

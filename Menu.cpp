@@ -3,12 +3,19 @@
 //
 #include "Menu.h"
 #include "Game.h"
+#include "Hiscores.h"
+#include "Options.h"
 
 Menu::Menu()
 : isRunning(true), gameStartRequested(false), showMenu(true), showOptions(false), mDisplay(nullptr)
 , mEventQueue(nullptr), clearColor(ImVec4(0.45f, 0.55f, 0.60f, 1.00f)), mWidth(1280), mHeight(720)
 {
     mOptions = std::make_unique<Options>(this);
+    mHiscores = std::make_unique<Hiscores>(this);
+}
+
+Menu::~Menu()
+{
 }
 
 bool Menu::Initialize()
@@ -39,6 +46,8 @@ bool Menu::Initialize()
 
     // Setup Platform/Renderer backends
     ImGui_ImplAllegro5_Init(mDisplay);
+
+    mHiscores->LoadFromFile();
 
     return true;
 }
@@ -101,6 +110,7 @@ void Menu::GenerateOutput()
 
     DrawMenu();
     mOptions->Draw();
+    mHiscores->Draw();
 
     // Rendering
     ImGui::Render();
@@ -121,6 +131,9 @@ void Menu::DrawMenu()
     if (ImGui::Button("Options", ImVec2(mWidth  / 4.0, 100)))
         mOptions->SetShown();
 
+    if (ImGui::Button("Hiscores", ImVec2(mWidth  / 4.0, 100)))
+        mHiscores->SetShown();
+
     if (ImGui::Button("Exit", ImVec2(mWidth  / 4.0, 100)))
         isRunning = false;
 
@@ -134,6 +147,9 @@ void Menu::RunGame()
     if (success)
     {
         game->RunLoop();
+
+        // Save score after game is over
+        mHiscores->SaveScore(game->GetPlayerName(), game->GetScore());
     }
 
     game->Shutdown();

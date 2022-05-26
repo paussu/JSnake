@@ -19,11 +19,11 @@ Snake::Snake(bool useSprites)
         mDrawStrategy = std::make_unique<PlainSnake>();
 
     mSnake = std::list<SnakePart>();
-    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 4, .y = mSnakeWidth, .color = mSnakeColor}, false, false, .direction = SnakeDirection::LEFT});
-    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 5, .y = mSnakeWidth, .color = mSnakeColor}, false, false, .direction = SnakeDirection::LEFT});
-    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 6, .y = mSnakeWidth, .color = mSnakeColor}, false, false, .direction = SnakeDirection::LEFT});
-    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 7, .y = mSnakeWidth, .color = mSnakeColor}, false, false, .direction = SnakeDirection::LEFT});
-    mSnake.emplace_back(SnakePart{ALLEGRO_VERTEX{.x = mSnakeWidth * 8, .y = mSnakeWidth, .color = mSnakeColor}, false, false, .direction = SnakeDirection::LEFT});
+    mSnake.emplace_back(SnakePart{.vertex = {.x = mSnakeWidth * 4, .y = mSnakeWidth, .color = mSnakeColor}, .isCurve = false, .isInvertedCurve = false, .direction = SnakeDirection::LEFT});
+    mSnake.emplace_back(SnakePart{.vertex = {.x = mSnakeWidth * 5, .y = mSnakeWidth, .color = mSnakeColor}, .isCurve = false, .isInvertedCurve = false, .direction = SnakeDirection::LEFT});
+    mSnake.emplace_back(SnakePart{.vertex = {.x = mSnakeWidth * 6, .y = mSnakeWidth, .color = mSnakeColor}, .isCurve = false, .isInvertedCurve = false, .direction = SnakeDirection::LEFT});
+    mSnake.emplace_back(SnakePart{.vertex = {.x = mSnakeWidth * 7, .y = mSnakeWidth, .color = mSnakeColor}, .isCurve = false, .isInvertedCurve = false, .direction = SnakeDirection::LEFT});
+    mSnake.emplace_back(SnakePart{.vertex = {.x = mSnakeWidth * 8, .y = mSnakeWidth, .color = mSnakeColor}, .isCurve = false, .isInvertedCurve = false, .direction = SnakeDirection::LEFT});
 }
 
 void Snake::Grow()

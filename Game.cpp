@@ -8,6 +8,8 @@
 
 #include <allegro5/allegro_image.h>
 #include <chrono>
+#include "ImGUI/imgui.h"
+#include "ImGUI/imgui_impl_allegro5.h"
 
 Game::Game(const GameConfiguration* config)
 : mConfiguration(config), mDisplay(nullptr), mEventQueue(nullptr), mTimer(nullptr), mFont(nullptr), isRunning(true), isPaused(false)
@@ -151,7 +153,7 @@ void Game::UpdateGame()
         mSnake->GetPosition().x = mConfiguration->screenWidth - mConfiguration->screenWidth % static_cast<int>(mSnake->GetSize());
 
     if (mSnake->GetPosition().y > mConfiguration->screenHeight)
-        mSnake->GetPosition().y = mHudHeight;
+        mSnake->GetPosition().y = mSnake->GetSize();
 
     if (mSnake->GetPosition().y < mHudHeight)
         mSnake->GetPosition().y = mConfiguration->screenHeight - mConfiguration->screenHeight % static_cast<int>(mSnake->GetSize());
@@ -194,11 +196,11 @@ ALLEGRO_VERTEX Game::RandomPosition(float foodSize)
 {
     ALLEGRO_VERTEX randomVertex;
 
-    std::uniform_int_distribution<int> xDistribution {0, mConfiguration->screenWidth};
+    std::uniform_int_distribution<int> xDistribution {(int)foodSize, mConfiguration->screenWidth};
     randomVertex.x = xDistribution(mRandomEngine);
     randomVertex.x -= fmodf(randomVertex.x, foodSize);
 
-    std::uniform_int_distribution<int> yDistribution {mHudHeight, mConfiguration->screenHeight};
+    std::uniform_int_distribution<int> yDistribution {mHudHeight + (int)foodSize, mConfiguration->screenHeight};
     randomVertex.y = yDistribution(mRandomEngine);
     randomVertex.y -= fmodf(randomVertex.y, foodSize);
 
@@ -217,9 +219,7 @@ void Game::DrawGame()
 
     if (gameLost)
     {
-        al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration->screenWidth / 2.0, mConfiguration->screenHeight / 4.0,
-                     ALLEGRO_ALIGN_CENTER, "YOU LOST");
-        al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration->screenWidth / 2.0, mConfiguration->screenHeight / 2.0, ALLEGRO_ALIGN_CENTER, "Press ESC to return to menu");
+        GameOverScreen();
     }
 }
 
@@ -228,3 +228,85 @@ void Game::DrawPauseMessage()
     al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration->screenWidth / 2.0, mConfiguration->screenHeight / 4.0, ALLEGRO_ALIGN_CENTER, "GAME PAUSED");
 }
 
+int Game::GetScore()
+{
+    return mScore;
+}
+
+void Game::GameOverScreen()
+{
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplAllegro5_Init(mDisplay);
+
+    std::string playerName;
+    char playerNameBuffer[64] = "";
+
+    while(playerName.empty())
+    {
+        ALLEGRO_EVENT ev;
+        while (al_get_next_event(mEventQueue, &ev))
+        {
+            ImGui_ImplAllegro5_ProcessEvent(&ev);
+            if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+                isRunning = false;
+            if (ev.type == ALLEGRO_EVENT_DISPLAY_RESIZE)
+            {
+                ImGui_ImplAllegro5_InvalidateDeviceObjects();
+                al_acknowledge_resize(mDisplay);
+                ImGui_ImplAllegro5_CreateDeviceObjects();
+            }
+        }
+
+        // Start the Dear ImGui frame
+        ImGui_ImplAllegro5_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowPos(ImVec2(200, 100));
+        ImGui::Begin("Game over", NULL, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
+
+        ImGui::BeginChild("Score", ImVec2(300.0, 300.0));
+
+        ImGui::Text("Player name: ");
+
+        ImGui::InputText("", playerNameBuffer, IM_ARRAYSIZE(playerNameBuffer));
+
+        ImGui::EndChild();
+
+        if(ImGui::Button("Exit and save score", ImVec2(200, 50)))
+        {
+            playerName = playerNameBuffer;
+            if(playerName.empty())
+                playerName = "Unnamed Player";
+        }
+
+        ImGui::End();
+
+        // Rendering
+        ImGui::Render();
+        al_clear_to_color(al_map_rgba_f(0.45f, 0.55f, 0.60f, 1.00f));
+        ImGui_ImplAllegro5_RenderDrawData(ImGui::GetDrawData());
+        al_flip_display();
+    }
+
+    // Cleanup
+    ImGui_ImplAllegro5_Shutdown();
+    ImGui::DestroyContext();
+
+    mPlayerName = playerName;
+
+    isRunning = false;
+}
+
+std::string Game::GetPlayerName()
+{
+    return mPlayerName;
+}
