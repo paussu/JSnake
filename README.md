@@ -10,6 +10,7 @@ Testing Allegro and Dear Imgui with a little snake game
     -   [ ] Improve menu usability and looks 
 -   [x] Add Pause screen
 -   [x] Add Lose screen
+-   [x] Add Hiscores
 -   [x] Count points
 -   [ ] Cleanup code
 
