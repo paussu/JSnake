@@ -1,6 +1,6 @@
 # JSnake
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f23deb0417e14b5cade23369ebc0331c)](https://app.codacy.com/gh/paussu/JSnake?utm_source=github.com&utm_medium=referral&utm_content=paussu/JSnake&utm_campaign=Badge_Grade_Settings)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/04795e58f677473c9242f02b4a32d51f)](https://app.codacy.com/gh/paussu/JSnake/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 JSnake is a small C++ snake game built with Allegro 5 and Dear ImGui. It started as a graphics and UI experiment and has grown into a polished desktop game with a configurable menu, sprite and classic visual modes, hiscore saving, and lightweight runtime logging.
 
