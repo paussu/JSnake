@@ -28,10 +28,10 @@ class Snake
 
  private:
     std::list<SnakePart> mSnake;
-    float mSnakeWidth;
-    ALLEGRO_COLOR mSnakeColor;
-    ALLEGRO_VERTEX mDirection;
-    ALLEGRO_VERTEX mPreviousDirection;
+   float mSnakeWidth = 16.0f;
+   ALLEGRO_COLOR mSnakeColor{.r = 255, .g = 0, .b = 0, .a = 255};
+   ALLEGRO_VERTEX mDirection{.x = -1, .y = 0};
+   ALLEGRO_VERTEX mPreviousDirection{.x = -1, .y = 0};
 
     std::unique_ptr<SnakeDrawStrategy> mDrawStrategy;
 };

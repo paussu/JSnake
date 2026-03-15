@@ -1,11 +1,6 @@
-//
-// Created by jipe on 5/9/21.
-//
-
 #include "Food.h"
 
 Food::Food(bool useSprites)
-: mFoodSize(16.0f)
 {
     if (useSprites)
     {

@@ -30,20 +30,22 @@ class Menu
  private:
     void ProcessInput();
     void DrawMenu();
+    void DrawMenuBackground(int width, int height);
     void DrawOptions();
     void GenerateOutput();
     void RunGame();
 
-    bool isRunning;
-    bool gameStartRequested;
-    bool showMenu;
-    bool showOptions;
+   bool isRunning = true;
+   bool gameStartRequested = false;
+   bool showMenu = true;
+   bool showOptions = false;
 
-    ImVec4 clearColor;
-    int mWidth, mHeight;
+   ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+   int mWidth = 1280;
+   int mHeight = 720;
 
-    ALLEGRO_DISPLAY* mDisplay;
-    ALLEGRO_EVENT_QUEUE* mEventQueue;
+   ALLEGRO_DISPLAY* mDisplay = nullptr;
+   ALLEGRO_EVENT_QUEUE* mEventQueue = nullptr;
 
     std::unique_ptr<Options> mOptions;
     std::unique_ptr<Hiscores> mHiscores;

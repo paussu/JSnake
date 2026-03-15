@@ -1,4 +1,5 @@
 #include "SpriteSnake.h"
+#include "Logger.h"
 #include <stdio.h>
 
 constexpr float ANGLE_LEFT = ALLEGRO_PI;
@@ -26,11 +27,21 @@ bool operator==(const SnakePart &part1, const SnakePart &part2)
 
 SpriteSnake::SpriteSnake()
 {
-    mHeadSprite = al_load_bitmap("../Assets/snake_head.png");
-    mBodySprite = al_load_bitmap("../Assets/snake_body.png");
-    mCurveSprite = al_load_bitmap("../Assets/snake_curve.png");
-    mInvertedCurveSprite = al_load_bitmap("../Assets/snake_curve_inv.png");
-    mTailSprite = al_load_bitmap("../Assets/snake_tail.png");
+    mHeadSprite = al_load_bitmap("Assets/snake_head.png");
+    mBodySprite = al_load_bitmap("Assets/snake_body.png");
+    mCurveSprite = al_load_bitmap("Assets/snake_curve.png");
+    mInvertedCurveSprite = al_load_bitmap("Assets/snake_curve_inv.png");
+    mTailSprite = al_load_bitmap("Assets/snake_tail.png");
+
+    if (mHeadSprite == nullptr || mBodySprite == nullptr || mCurveSprite == nullptr
+        || mInvertedCurveSprite == nullptr || mTailSprite == nullptr)
+    {
+        Logger::Error("Failed to load one or more snake sprite bitmaps from Assets");
+    }
+    else
+    {
+        Logger::Debug("Loaded snake sprite bitmaps");
+    }
 }
 
 SpriteSnake::~SpriteSnake()

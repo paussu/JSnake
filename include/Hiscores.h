@@ -17,7 +17,7 @@ class Hiscores
     void LoadFromFile();
 
  private:
-    const Menu* mParentMenu;
-    bool isShowed;
+   const Menu* mParentMenu = nullptr;
+   bool isShowed = false;
     std::vector<std::pair<std::string, int>> mScoreList;
 };

@@ -19,8 +19,8 @@ class Food
     void SetPosition(ALLEGRO_VERTEX newPosition);
     bool IsEaten(ALLEGRO_VERTEX &snakePosition) const;
  private:
-    ALLEGRO_VERTEX mPosition;
-    float mFoodSize;
+   ALLEGRO_VERTEX mPosition{.x = 112.0f, .y = 112.0f, .color = {.r = 255, .g = 255, .b = 0, .a = 0}};
+   float mFoodSize = 16.0f;
     std::unique_ptr<FoodDrawStrategy> mDrawStrategy;
 };
 

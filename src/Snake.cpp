@@ -1,14 +1,10 @@
-//
-// Created by jipe on 5/8/21.
-//
-
 #include "Snake.h"
 #include "PlainSnake.h"
 #include "SpriteSnake.h"
+#include <algorithm>
 #include <ranges>
 
 Snake::Snake(bool useSprites)
-: mSnakeWidth(16.0f), mSnakeColor{.r = 255, .g = 0, .b = 0, .a = 255}, mDirection{.x = -1, .y = 0}, mPreviousDirection(mDirection)
 {
     if (useSprites)
     {
@@ -18,6 +14,7 @@ Snake::Snake(bool useSprites)
     else
         mDrawStrategy = std::make_unique<PlainSnake>();
 
+    mPreviousDirection = mDirection;
     mSnake = std::list<SnakePart>();
     mSnake.emplace_back(SnakePart{.vertex = {.x = mSnakeWidth * 4, .y = mSnakeWidth, .color = mSnakeColor}, .isCurve = false, .isInvertedCurve = false, .direction = SnakeDirection::LEFT});
     mSnake.emplace_back(SnakePart{.vertex = {.x = mSnakeWidth * 5, .y = mSnakeWidth, .color = mSnakeColor}, .isCurve = false, .isInvertedCurve = false, .direction = SnakeDirection::LEFT});

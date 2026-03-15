@@ -25,7 +25,7 @@ class SpriteFood : public FoodDrawStrategy
  public:
     SpriteFood()
     {
-        mSprite = al_load_bitmap("../Assets/apple.png");
+        mSprite = al_load_bitmap("Assets/apple.png");
     }
 
     ~SpriteFood()

@@ -34,12 +34,12 @@ class Options
     [[nodiscard]] const GameConfiguration & GetGameConfiguration();
 
  private:
-    const class Menu* mParentMenu;
-    bool isShowed;
-    int mSelectedResolution;
-    const char *comboItems[7];
+    const class Menu* mParentMenu = nullptr;
+    bool isShowed = false;
+    int mSelectedResolution = 1;
+    const char *comboItems[7] = {"800x600", "1024x768", "1280x720", "1440x900", "1600x900", "1920x1080", "2560x1440"};
 
-    GameConfiguration mGameConfiguration;
+    GameConfiguration mGameConfiguration{1024, 768, false, true};
 };
 
 

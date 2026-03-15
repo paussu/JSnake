@@ -1,15 +1,9 @@
-//
-// Created by jipe on 5/26/21.
-//
-
 #include "Options.h"
 #include "Menu.h"
 
 Options::Options(const Menu *parentMenu)
-: mParentMenu(parentMenu), isShowed(false), mGameConfiguration{1024, 768, false, true}
-, comboItems{"800x600", "1024x768", "1280x720", "1440x900", "1600x900", "1920x1080", "2560x1440"}
-, mSelectedResolution(1)
 {
+    mParentMenu = parentMenu;
 }
 
 void Options::Draw()
@@ -19,16 +13,47 @@ void Options::Draw()
 
     const auto &parentWidth = mParentMenu->GetWidth();
     const auto &parentHeight = mParentMenu->GetHeight();
+    const auto &configuration = GetGameConfiguration();
 
-    ImGui::SetNextWindowSize(ImVec2(parentWidth, parentHeight - (parentHeight / 4.0)), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowPos(ImVec2(parentWidth / 4.0, 100));
-    ImGui::Begin("Options", NULL, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
+    const float windowWidth = std::min(parentWidth * 0.56f, 720.0f);
+    const float windowHeight = std::min(parentHeight * 0.62f, 420.0f);
 
+    ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2((parentWidth - windowWidth) * 0.5f, (parentHeight - windowHeight) * 0.5f), ImGuiCond_Always);
+    ImGui::Begin("Options", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
+
+    ImGui::TextColored(ImVec4(0.27f, 0.80f, 0.62f, 1.0f), "Game setup");
+    ImGui::TextDisabled("Tune the display and choose the look of the snake.");
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    ImGui::BeginChild("OptionsEditor", ImVec2(windowWidth * 0.52f, 0.0f), true);
+    ImGui::TextDisabled("Video");
+    ImGui::SetNextItemWidth(-1.0f);
     ImGui::Combo("Resolution", &mSelectedResolution, comboItems, IM_ARRAYSIZE(comboItems));
     ImGui::Checkbox("Fullscreen", &mGameConfiguration.fullscreen);
-    ImGui::Checkbox("Use Sprites", &mGameConfiguration.useSprites);
-    if (ImGui::Button("Exit Options", ImVec2(parentWidth  / 4.0, 50)))
+    ImGui::Spacing();
+    ImGui::TextDisabled("Visuals");
+    ImGui::Checkbox("Use sprite graphics", &mGameConfiguration.useSprites);
+    ImGui::Spacing();
+    ImGui::TextWrapped("Changes apply to the next run when you start a new game.");
+    ImGui::EndChild();
+
+    ImGui::SameLine();
+
+    ImGui::BeginChild("OptionsPreview", ImVec2(0.0f, 0.0f), true);
+    ImGui::TextColored(ImVec4(0.98f, 0.91f, 0.39f, 1.0f), "Preview");
+    ImGui::Spacing();
+    ImGui::BulletText("Resolution: %dx%d", configuration.screenWidth, configuration.screenHeight);
+    ImGui::BulletText("Display: %s", configuration.fullscreen ? "Fullscreen" : "Windowed");
+    ImGui::BulletText("Theme: %s", configuration.useSprites ? "Sprite pack" : "Minimal mode");
+    ImGui::Spacing();
+    ImGui::TextWrapped("Higher resolutions create a larger playfield. Sprite mode uses the art in the Assets folder, while minimal mode keeps the classic block style.");
+    ImGui::Dummy(ImVec2(0.0f, 16.0f));
+    if (ImGui::Button("Back to menu", ImVec2(-1.0f, 46.0f)))
         isShowed = false;
+    ImGui::EndChild();
 
     ImGui::End();
 }

@@ -1,21 +1,16 @@
-//
-// Created by jipe on 5/8/21.
-//
 #include "Game.h"
 #include "Options.h"
 #include "Snake.h"
 #include "Food.h"
+#include "Logger.h"
 
 #include <allegro5/allegro_image.h>
-#include <chrono>
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_allegro5.h"
 
 Game::Game(const GameConfiguration* config)
-: mConfiguration(config), mDisplay(nullptr), mEventQueue(nullptr), mTimer(nullptr), mFont(nullptr), isRunning(true), isPaused(false)
-, gameLost(false), mHudHeight(16), mRandomEngine(std::chrono::steady_clock::now().time_since_epoch().count())
-, previousTime(0), currentTime(0), mSpeed(10.5), mFontSize(16), mScore(0), mScoreText("Score: 0")
 {
+    mConfiguration = config;
 }
 
 Game::~Game()
@@ -24,10 +19,20 @@ Game::~Game()
 
 bool Game::Initialize()
 {
+    Logger::Debug("Initializing game state");
+
     // Setup Allegro
-    al_init();
-    al_install_keyboard();
+    if (!al_init())
+    {
+        Logger::Error("Failed to initialize Allegro for game");
+        return false;
+    }
+
+    if (!al_install_keyboard())
+        Logger::Error("Failed to install keyboard input for game");
+
     al_init_primitives_addon();
+    al_init_font_addon();
     al_init_ttf_addon();
     al_init_image_addon();
 
@@ -37,29 +42,54 @@ bool Game::Initialize()
         al_set_new_display_flags(ALLEGRO_RESIZABLE);
 
     mDisplay = al_create_display(mConfiguration->screenWidth, mConfiguration->screenHeight);
+    if (mDisplay == nullptr)
+    {
+        Logger::Error("Failed to create game display");
+        return false;
+    }
+
     al_set_window_position(mDisplay, mConfiguration->screenWidth / 2, mConfiguration->screenHeight / 2);
     al_set_window_title(mDisplay, "JSnake");
 
     mEventQueue = al_create_event_queue();
+    if (mEventQueue == nullptr)
+    {
+        Logger::Error("Failed to create game event queue");
+        return false;
+    }
+
     al_register_event_source(mEventQueue, al_get_display_event_source(mDisplay));
     al_register_event_source(mEventQueue, al_get_keyboard_event_source());
     al_register_event_source(mEventQueue, al_get_mouse_event_source());
 
-    mFont = al_load_ttf_font("../Assets/RETRO_SPACE_INV.ttf", mFontSize, 0);
+    mFont = al_load_ttf_font("Assets/RETRO_SPACE_INV.ttf", mFontSize, 0);
     if (mFont == nullptr)
+    {
+        Logger::Error("Failed to load game font from Assets/RETRO_SPACE_INV.ttf");
         return false;
+    }
 
     mTimer = al_create_timer(0.1);
+    if (mTimer == nullptr)
+    {
+        Logger::Error("Failed to create game timer");
+        return false;
+    }
+
     al_start_timer(mTimer);
 
     mSnake = std::make_unique<Snake>(mConfiguration->useSprites);
     mFood = std::make_unique<Food>(mConfiguration->useSprites);
+
+    Logger::Debug("Game initialized successfully");
 
     return true;
 }
 
 void Game::RunLoop()
 {
+    Logger::Debug("Entering game loop");
+
     while (isRunning)
     {
         ProcessInput();
@@ -69,6 +99,8 @@ void Game::RunLoop()
 
         GenerateOutput();
     }
+
+    Logger::Debug("Leaving game loop");
 }
 
 void Game::Shutdown()
@@ -78,56 +110,100 @@ void Game::Shutdown()
     al_destroy_display(mDisplay);
 }
 
+void Game::HandleDisplayCloseEvent(const ALLEGRO_EVENT& event)
+{
+    if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+    {
+        Logger::Debug("Received display close event in game");
+        isRunning = false;
+    }
+}
+
+void Game::HandleGameLostEvent(const ALLEGRO_EVENT& event)
+{
+    if (gameLost)
+    {
+        if (event.type == ALLEGRO_EVENT_KEY_DOWN
+            && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+        {
+            Logger::Debug("Escape pressed after game over");
+            isRunning = false;
+        }
+    }
+}
+
+void Game::HandleKeyDownEvent(const ALLEGRO_EVENT& event)
+{
+    if (event.type == ALLEGRO_EVENT_KEY_DOWN)
+    {
+        if (event.keyboard.keycode == ALLEGRO_KEY_P)
+        {
+            isPaused = !isPaused;
+            Logger::Debug(isPaused ? "Game paused" : "Game resumed");
+        }
+
+        if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+        {
+            Logger::Debug("Escape pressed during gameplay");
+            isRunning = false;
+        }
+    }
+}
+
+void Game::HandleKeyCharEvent(const ALLEGRO_EVENT& event)
+{
+    if (event.type == ALLEGRO_EVENT_KEY_CHAR)
+    {
+        HandleMovementKey(event.keyboard.keycode);
+    }
+}
+
+void Game::HandleMovementKey(int keycode)
+{
+    const auto snakeSize = mSnake->GetSize();
+    switch (keycode)
+    {
+        case ALLEGRO_KEY_W:
+        case ALLEGRO_KEY_UP:
+            mSnake->Move(0, -snakeSize);
+            break;
+        case ALLEGRO_KEY_S:
+        case ALLEGRO_KEY_DOWN:
+            mSnake->Move(0, snakeSize);
+            break;
+        case ALLEGRO_KEY_A:
+        case ALLEGRO_KEY_LEFT:
+            mSnake->Move(-snakeSize, 0);
+            break;
+        case ALLEGRO_KEY_D:
+        case ALLEGRO_KEY_RIGHT:
+            mSnake->Move(snakeSize, 0);
+            break;
+        default:
+            break;
+    }
+}
+
 void Game::ProcessInput()
 {
     // Poll and handle events (inputs, window resize, etc.)
     ALLEGRO_EVENT event;
     while (al_get_next_event(mEventQueue, &event))
     {
-        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-            isRunning = false;
+        HandleDisplayCloseEvent(event);
 
         if (gameLost)
         {
-            if (event.type == ALLEGRO_EVENT_KEY_DOWN
-            && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
-                    isRunning = false;
-
+            HandleGameLostEvent(event);
             continue;
         }
 
-        if (event.type == ALLEGRO_EVENT_KEY_DOWN)
-        {
-            if (event.keyboard.keycode == ALLEGRO_KEY_P)
-                isPaused = !isPaused;
-
-            if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
-                isRunning = false;
-        }
+        HandleKeyDownEvent(event);
 
         if (isPaused)
             return;
 
-        if (event.type == ALLEGRO_EVENT_KEY_CHAR)
-        {
-            switch (event.keyboard.keycode)
-            {
-            case ALLEGRO_KEY_UP:
-                mSnake->Move(0, -mSnake->GetSize());
-                break;
-            case ALLEGRO_KEY_DOWN:
-                mSnake->Move(0, mSnake->GetSize());
-                break;
-            case ALLEGRO_KEY_LEFT:
-                mSnake->Move(-mSnake->GetSize(), 0);
-                break;
-            case ALLEGRO_KEY_RIGHT:
-                mSnake->Move(mSnake->GetSize(), 0);
-                break;
-            default:
-                break;
-            }
-        }
+        HandleKeyCharEvent(event);
     }
 }
 
@@ -144,19 +220,10 @@ void Game::UpdateGame()
 
         mScore++;
         mScoreText = "Score: " + std::to_string(mScore);
+        Logger::Debug("Food eaten, score updated to " + std::to_string(mScore));
     }
 
-    if (mSnake->GetPosition().x > mConfiguration->screenWidth)
-        mSnake->GetPosition().x = 0;
-
-    if (mSnake->GetPosition().x < 0)
-        mSnake->GetPosition().x = mConfiguration->screenWidth - mConfiguration->screenWidth % static_cast<int>(mSnake->GetSize());
-
-    if (mSnake->GetPosition().y > mConfiguration->screenHeight)
-        mSnake->GetPosition().y = mSnake->GetSize();
-
-    if (mSnake->GetPosition().y < mHudHeight)
-        mSnake->GetPosition().y = mConfiguration->screenHeight - mConfiguration->screenHeight % static_cast<int>(mSnake->GetSize());
+    HandleSnakeBoundary();
 
     currentTime = al_get_timer_count(mTimer);
     if (previousTime + mSpeed < currentTime)
@@ -166,7 +233,10 @@ void Game::UpdateGame()
     }
 
     if (mSnake->CheckCollision())
+    {
+        Logger::Error("Snake collision detected, ending game");
         gameLost = true;
+    }
 }
 
 void Game::GenerateOutput()
@@ -235,6 +305,8 @@ int Game::GetScore()
 
 void Game::GameOverScreen()
 {
+    Logger::Debug("Showing game over screen");
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -286,6 +358,8 @@ void Game::GameOverScreen()
             playerName = playerNameBuffer;
             if(playerName.empty())
                 playerName = "Unnamed Player";
+
+            Logger::Debug("Saving score for player " + playerName);
         }
 
         ImGui::End();
@@ -309,4 +383,19 @@ void Game::GameOverScreen()
 std::string Game::GetPlayerName()
 {
     return mPlayerName;
+}
+
+void Game::HandleSnakeBoundary()
+{
+    if (mSnake->GetPosition().x > mConfiguration->screenWidth)
+        mSnake->GetPosition().x = 0;
+
+    if (mSnake->GetPosition().x < 0)
+        mSnake->GetPosition().x = mConfiguration->screenWidth - mConfiguration->screenWidth % static_cast<int>(mSnake->GetSize());
+
+    if (mSnake->GetPosition().y > mConfiguration->screenHeight)
+        mSnake->GetPosition().y = mSnake->GetSize();
+
+    if (mSnake->GetPosition().y < mHudHeight)
+        mSnake->GetPosition().y = mConfiguration->screenHeight - mConfiguration->screenHeight % static_cast<int>(mSnake->GetSize());
 }
