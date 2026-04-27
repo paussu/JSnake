@@ -1,7 +1,3 @@
-//
-// Created by jipe on 5/26/21.
-//
-
 #pragma once
 
 struct GameConfiguration
@@ -35,7 +31,7 @@ class Options
 
  private:
     const class Menu* mParentMenu = nullptr;
-    bool isShowed = false;
+    bool mIsShown = false;
     int mSelectedResolution = 1;
     const char *comboItems[7] = {"800x600", "1024x768", "1280x720", "1440x900", "1600x900", "1920x1080", "2560x1440"};
 

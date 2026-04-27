@@ -4,8 +4,13 @@
 #include "Logger.h"
 #include "Options.h"
 
+#include "ImGUI/imgui.h"
+#include "ImGUI/imgui_impl_allegro5.h"
+
+#include <allegro5/allegro_primitives.h>
 #include <algorithm>
 
+Menu::~Menu() = default;
 namespace
 {
     const ImVec4 kTitleColor(0.98f, 0.91f, 0.39f, 1.0f);
@@ -16,10 +21,6 @@ Menu::Menu()
 {
     mOptions = std::make_unique<Options>(this);
     mHiscores = std::make_unique<Hiscores>(this);
-}
-
-Menu::~Menu()
-{
 }
 
 bool Menu::Initialize()
@@ -111,14 +112,14 @@ bool Menu::Initialize()
 
 void Menu::RunLoop()
 {
-    while (isRunning)
+    while (mIsRunning)
     {
         ProcessInput();
         GenerateOutput();
 
-        if (gameStartRequested)
+        if (mGameStartRequested)
         {
-            gameStartRequested = false;
+            mGameStartRequested = false;
 
             // Exit menu
             Shutdown();
@@ -151,7 +152,8 @@ void Menu::ProcessInput()
     {
         ImGui_ImplAllegro5_ProcessEvent(&ev);
         if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-            isRunning = false;
+            mIsRunning = false;
+
         if (ev.type == ALLEGRO_EVENT_DISPLAY_RESIZE)
         {
             ImGui_ImplAllegro5_InvalidateDeviceObjects();
@@ -190,7 +192,7 @@ void Menu::DrawMenu()
     ImGui::SetNextWindowSize(panelSize, ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2((mWidth - panelWidth) * 0.5f, (mHeight - panelHeight) * 0.5f), ImGuiCond_Always);
     ImGui::SetNextWindowBgAlpha(0.96f);
-    ImGui::Begin("Start menu", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin("Start menu", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
 
     ImGui::TextColored(kTitleColor, "JSnake");
     ImGui::TextDisabled("Retro snake with a cleaner front-end.");
@@ -211,7 +213,7 @@ void Menu::DrawMenu()
 
     const ImVec2 buttonSize(-1.0f, 54.0f);
     if (ImGui::Button("Play game", buttonSize))
-        gameStartRequested = true;
+        mGameStartRequested = true;
 
     if (ImGui::Button("Options", buttonSize))
         mOptions->SetShown();
@@ -220,7 +222,7 @@ void Menu::DrawMenu()
         mHiscores->SetShown();
 
     if (ImGui::Button("Exit", buttonSize))
-        isRunning = false;
+        mIsRunning = false;
 
     ImGui::Spacing();
     ImGui::Separator();
@@ -261,9 +263,7 @@ void Menu::RunGame()
         Logger::Debug("Game session finished successfully");
     }
     else
-    {
         Logger::Error("Game initialization failed from menu");
-    }
 
     game->Shutdown();
 }

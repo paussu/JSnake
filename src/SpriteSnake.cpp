@@ -1,6 +1,5 @@
 #include "SpriteSnake.h"
 #include "Logger.h"
-#include <stdio.h>
 
 constexpr float ANGLE_LEFT = ALLEGRO_PI;
 constexpr float ANGLE_RIGHT = 0;
@@ -35,13 +34,9 @@ SpriteSnake::SpriteSnake()
 
     if (mHeadSprite == nullptr || mBodySprite == nullptr || mCurveSprite == nullptr
         || mInvertedCurveSprite == nullptr || mTailSprite == nullptr)
-    {
         Logger::Error("Failed to load one or more snake sprite bitmaps from Assets");
-    }
     else
-    {
         Logger::Debug("Loaded snake sprite bitmaps");
-    }
 }
 
 SpriteSnake::~SpriteSnake()
@@ -55,23 +50,20 @@ SpriteSnake::~SpriteSnake()
 
 void SpriteSnake::Draw(const std::list<SnakePart> &snake, float snakeWidth)
 {
-    const auto &snakeHead = snake.front();
-    const auto &snakeTail = snake.back();
-
     ALLEGRO_BITMAP *sprite = nullptr;
     for (const auto &snakePart : snake)
     {
         const auto &direction = snakePart.direction;
         const auto isCurve = snakePart.isCurve;
 
-        float angle = 0;
+        float angle = 0.0f;
         if (direction == SnakeDirection::RIGHT)
             angle = ANGLE_RIGHT;
-        if (direction == SnakeDirection::LEFT)
+        else if (direction == SnakeDirection::LEFT)
             angle = ANGLE_LEFT;
-        if (direction == SnakeDirection::DOWN)
+        else if (direction == SnakeDirection::DOWN)
             angle = ANGLE_DOWN;
-        if (direction == SnakeDirection::UP)
+        else if (direction == SnakeDirection::UP)
             angle = ANGLE_UP;
 
         if (snakePart == snake.front())
@@ -85,11 +77,11 @@ void SpriteSnake::Draw(const std::list<SnakePart> &snake, float snakeWidth)
 
             if (prevDirection == SnakeDirection::RIGHT)
                 angle = ANGLE_RIGHT;
-            if (prevDirection == SnakeDirection::LEFT)
+            else if (prevDirection == SnakeDirection::LEFT)
                 angle = ANGLE_LEFT;
-            if (prevDirection == SnakeDirection::DOWN)
+            else if (prevDirection == SnakeDirection::DOWN)
                 angle = ANGLE_DOWN;
-            if (prevDirection == SnakeDirection::UP)
+            else if (prevDirection == SnakeDirection::UP)
                 angle = ANGLE_UP;
         }
         else if (isCurve)

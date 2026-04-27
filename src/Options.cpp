@@ -1,6 +1,11 @@
 #include "Options.h"
 #include "Menu.h"
 
+#include "ImGUI/imgui.h"
+#include "ImGUI/imgui_impl_allegro5.h"
+
+#include <algorithm>
+
 Options::Options(const Menu *parentMenu)
 {
     mParentMenu = parentMenu;
@@ -8,7 +13,7 @@ Options::Options(const Menu *parentMenu)
 
 void Options::Draw()
 {
-    if (!isShowed)
+    if (!mIsShown)
         return;
 
     const auto &parentWidth = mParentMenu->GetWidth();
@@ -20,7 +25,7 @@ void Options::Draw()
 
     ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2((parentWidth - windowWidth) * 0.5f, (parentHeight - windowHeight) * 0.5f), ImGuiCond_Always);
-    ImGui::Begin("Options", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin("Options", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
 
     ImGui::TextColored(ImVec4(0.27f, 0.80f, 0.62f, 1.0f), "Game setup");
     ImGui::TextDisabled("Tune the display and choose the look of the snake.");
@@ -51,8 +56,10 @@ void Options::Draw()
     ImGui::Spacing();
     ImGui::TextWrapped("Higher resolutions create a larger playfield. Sprite mode uses the art in the Assets folder, while minimal mode keeps the classic block style.");
     ImGui::Dummy(ImVec2(0.0f, 16.0f));
+
     if (ImGui::Button("Back to menu", ImVec2(-1.0f, 46.0f)))
-        isShowed = false;
+        mIsShown = false;
+
     ImGui::EndChild();
 
     ImGui::End();
@@ -60,7 +67,7 @@ void Options::Draw()
 
 void Options::SetShown()
 {
-    isShowed = true;
+    mIsShown = true;
 }
 
 const GameConfiguration& Options::GetGameConfiguration()

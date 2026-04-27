@@ -13,16 +13,16 @@ enum class SnakeDirection
 
 struct SnakePart
 {
-    ALLEGRO_VERTEX vertex;
-    bool isCurve;
-    bool isInvertedCurve;
-    SnakeDirection direction;
+    ALLEGRO_VERTEX vertex{};
+    bool isCurve = false;
+    bool isInvertedCurve = false;
+    SnakeDirection direction = SnakeDirection::LEFT;
 };
 
 class SnakeDrawStrategy
 {
  public:
-    virtual ~SnakeDrawStrategy(){}
+    virtual ~SnakeDrawStrategy() = default;
 
     virtual void Draw(const std::list<SnakePart> &snake, float snakeWidth) = 0;
 };

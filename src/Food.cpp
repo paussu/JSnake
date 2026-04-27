@@ -24,7 +24,7 @@ void Food::SetPosition(ALLEGRO_VERTEX newPosition)
     mPosition.y = newPosition.y;
 }
 
-bool Food::IsEaten(ALLEGRO_VERTEX &snakePosition) const
+bool Food::IsEaten(const ALLEGRO_VERTEX &snakePosition) const
 {
     return mPosition.x >= snakePosition.x
     && mPosition.x < snakePosition.x + mFoodSize

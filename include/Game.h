@@ -1,7 +1,3 @@
-//
-// Created by jipe on 5/8/21.
-//
-
 #pragma once
 
 #include <allegro5/allegro.h>
@@ -26,8 +22,8 @@ class Game
     bool Initialize();
     void RunLoop();
     void Shutdown();
-    int GetScore();
-    std::string GetPlayerName();
+    [[nodiscard]] int GetScore() const;
+    [[nodiscard]] const std::string& GetPlayerName() const;
 
  private:
     void ProcessInput();
@@ -45,24 +41,24 @@ class Game
 
     ALLEGRO_VERTEX RandomPosition(float foodSize);
 
-   bool isRunning = true;
-   bool isPaused = false;
-   bool gameLost = false;
+   bool mIsRunning = true;
+   bool mIsPaused = false;
+   bool mGameLost = false;
 
    const GameConfiguration* mConfiguration = nullptr;
    int mHudHeight = 16;
    int mFontSize = 16;
    int mScore = 0;
-   int previousTime = 0;
-   int currentTime = 0;
+   int mPreviousTime = 0;
+   int mCurrentTime = 0;
    double mSpeed = 10.5;
 
    ALLEGRO_DISPLAY* mDisplay = nullptr;
    ALLEGRO_EVENT_QUEUE* mEventQueue = nullptr;
    ALLEGRO_FONT* mFont = nullptr;
    ALLEGRO_TIMER* mTimer = nullptr;
-    std::unique_ptr<Snake> mSnake;
-    std::unique_ptr<Food> mFood;
+   std::unique_ptr<Snake> mSnake;
+   std::unique_ptr<Food> mFood;
 
    std::default_random_engine mRandomEngine{
       static_cast<std::default_random_engine::result_type>(std::chrono::steady_clock::now().time_since_epoch().count())

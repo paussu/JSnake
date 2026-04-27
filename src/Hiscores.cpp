@@ -1,6 +1,8 @@
 #include "Hiscores.h"
 #include "Logger.h"
 #include "Menu.h"
+#include "ImGUI/imgui.h"
+#include "ImGUI/imgui_impl_allegro5.h"
 #include <algorithm>
 #include <fstream>
 
@@ -12,7 +14,7 @@ Hiscores::Hiscores(const Menu *parentMenu)
 
 void Hiscores::Draw()
 {
-    if (!isShowed)
+    if (!mIsShown)
         return;
 
     const auto &parentWidth = mParentMenu->GetWidth();
@@ -22,7 +24,7 @@ void Hiscores::Draw()
 
     ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
     ImGui::SetNextWindowPos(ImVec2((parentWidth - windowWidth) * 0.5f, (parentHeight - windowHeight) * 0.5f), ImGuiCond_Always);
-    ImGui::Begin("Hiscores", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin("Hiscores", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
 
     ImGui::TextColored(ImVec4(0.27f, 0.80f, 0.62f, 1.0f), "Hall of fame");
     ImGui::TextDisabled("The best surviving snakes are listed here.");
@@ -63,14 +65,14 @@ void Hiscores::Draw()
     ImGui::EndChild();
 
     if (ImGui::Button("Back to menu", ImVec2(-1.0f, 42.0f)))
-        isShowed = false;
+        mIsShown = false;
 
     ImGui::End();
 }
 
 void Hiscores::SetShown()
 {
-    isShowed = true;
+    mIsShown = true;
 }
 
 void Hiscores::LoadFromFile()
@@ -89,13 +91,12 @@ void Hiscores::LoadFromFile()
 
     Logger::Debug("Loading hiscores from ../Hiscores.score");
 
-    std::pair<std::string, int> score;
     while (getline(scoreFile, line, '\n'))
     {
-        const auto delimiterPos = line.find(";");
-        const auto &playerName = line.substr(0, line.find(";"));
+        const auto delimiterPos = line.find(';');
+        const std::string playerName = line.substr(0, delimiterPos);
         line.erase(0, delimiterPos + 1);
-        const auto score = std::stoi(line);
+        const int score = std::stoi(line);
         mScoreList.push_back({playerName, score});
     }
 

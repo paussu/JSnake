@@ -18,6 +18,6 @@ class Hiscores
 
  private:
    const Menu* mParentMenu = nullptr;
-   bool isShowed = false;
-    std::vector<std::pair<std::string, int>> mScoreList;
+   bool mIsShown = false;
+   std::vector<std::pair<std::string, int>> mScoreList;
 };

@@ -1,7 +1,3 @@
-//
-// Created by jipe on 5/8/21.
-//
-
 #pragma once
 
 #include <allegro5/allegro_primitives.h>
@@ -13,26 +9,26 @@
 class Snake
 {
  public:
-    explicit Snake(bool useSprites = false);
-    ~Snake() = default;
+   explicit Snake(bool useSprites = false);
+   ~Snake() = default;
 
-    void Grow();
-    void Move(float x, float y);
-    void Draw();
-    bool CheckCollision();
-    bool IsInside(ALLEGRO_VERTEX &position);
+   void Grow();
+   void Move(float x, float y);
+   void Draw();
+   [[nodiscard]] bool CheckCollision() const;
+   [[nodiscard]] bool IsInside(const ALLEGRO_VERTEX &position) const;
 
-    ALLEGRO_VERTEX &GetPosition();
-    ALLEGRO_VERTEX &GetDirection();
-    float GetSize();
+   ALLEGRO_VERTEX &GetPosition();
+   ALLEGRO_VERTEX &GetDirection();
+   [[nodiscard]] float GetSize() const;
 
  private:
-    std::list<SnakePart> mSnake;
    float mSnakeWidth = 16.0f;
    ALLEGRO_COLOR mSnakeColor{.r = 255, .g = 0, .b = 0, .a = 255};
    ALLEGRO_VERTEX mDirection{.x = -1, .y = 0};
    ALLEGRO_VERTEX mPreviousDirection{.x = -1, .y = 0};
 
-    std::unique_ptr<SnakeDrawStrategy> mDrawStrategy;
+   std::list<SnakePart> mSnake;
+   std::unique_ptr<SnakeDrawStrategy> mDrawStrategy;
 };
 

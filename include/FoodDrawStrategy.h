@@ -5,7 +5,7 @@
 class FoodDrawStrategy
 {
  public:
-    virtual ~FoodDrawStrategy(){}
+    virtual ~FoodDrawStrategy() = default;
 
     virtual void Draw(const ALLEGRO_VERTEX &vertex, float foodSize) = 0;
 };
@@ -39,6 +39,6 @@ class SpriteFood : public FoodDrawStrategy
     }
 
  private:
-    ALLEGRO_BITMAP* mSprite;
+    ALLEGRO_BITMAP* mSprite = nullptr;
 };
 

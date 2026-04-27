@@ -8,12 +8,9 @@
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_allegro5.h"
 
+Game::~Game() = default;
 Game::Game(const GameConfiguration* config)
-{
-    mConfiguration = config;
-}
-
-Game::~Game()
+    : mConfiguration(config)
 {
 }
 
@@ -90,11 +87,11 @@ void Game::RunLoop()
 {
     Logger::Debug("Entering game loop");
 
-    while (isRunning)
+    while (mIsRunning)
     {
         ProcessInput();
 
-        if (!isPaused && !gameLost)
+        if (!mIsPaused && !mGameLost)
             UpdateGame();
 
         GenerateOutput();
@@ -115,20 +112,17 @@ void Game::HandleDisplayCloseEvent(const ALLEGRO_EVENT& event)
     if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
     {
         Logger::Debug("Received display close event in game");
-        isRunning = false;
+        mIsRunning = false;
     }
 }
 
 void Game::HandleGameLostEvent(const ALLEGRO_EVENT& event)
 {
-    if (gameLost)
+    if (event.type == ALLEGRO_EVENT_KEY_DOWN
+        && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
     {
-        if (event.type == ALLEGRO_EVENT_KEY_DOWN
-            && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
-        {
-            Logger::Debug("Escape pressed after game over");
-            isRunning = false;
-        }
+        Logger::Debug("Escape pressed after game over");
+        mIsRunning = false;
     }
 }
 
@@ -138,14 +132,14 @@ void Game::HandleKeyDownEvent(const ALLEGRO_EVENT& event)
     {
         if (event.keyboard.keycode == ALLEGRO_KEY_P)
         {
-            isPaused = !isPaused;
-            Logger::Debug(isPaused ? "Game paused" : "Game resumed");
+            mIsPaused = !mIsPaused;
+            Logger::Debug(mIsPaused ? "Game paused" : "Game resumed");
         }
 
         if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
         {
             Logger::Debug("Escape pressed during gameplay");
-            isRunning = false;
+            mIsRunning = false;
         }
     }
 }
@@ -153,9 +147,7 @@ void Game::HandleKeyDownEvent(const ALLEGRO_EVENT& event)
 void Game::HandleKeyCharEvent(const ALLEGRO_EVENT& event)
 {
     if (event.type == ALLEGRO_EVENT_KEY_CHAR)
-    {
         HandleMovementKey(event.keyboard.keycode);
-    }
 }
 
 void Game::HandleMovementKey(int keycode)
@@ -192,7 +184,7 @@ void Game::ProcessInput()
     {
         HandleDisplayCloseEvent(event);
 
-        if (gameLost)
+        if (mGameLost)
         {
             HandleGameLostEvent(event);
             continue;
@@ -200,7 +192,7 @@ void Game::ProcessInput()
 
         HandleKeyDownEvent(event);
 
-        if (isPaused)
+        if (mIsPaused)
             return;
 
         HandleKeyCharEvent(event);
@@ -225,17 +217,17 @@ void Game::UpdateGame()
 
     HandleSnakeBoundary();
 
-    currentTime = al_get_timer_count(mTimer);
-    if (previousTime + mSpeed < currentTime)
+    mCurrentTime = al_get_timer_count(mTimer);
+    if (mPreviousTime + mSpeed < mCurrentTime)
     {
         mSnake->Move(mSnake->GetSize() * mSnake->GetDirection().x, mSnake->GetSize() * mSnake->GetDirection().y);
-        previousTime = currentTime;
+        mPreviousTime = mCurrentTime;
     }
 
     if (mSnake->CheckCollision())
     {
         Logger::Error("Snake collision detected, ending game");
-        gameLost = true;
+        mGameLost = true;
     }
 }
 
@@ -243,7 +235,7 @@ void Game::GenerateOutput()
 {
     al_clear_to_color(ALLEGRO_COLOR{.r = 0, .g = 0, .b = 0, .a = 0});
 
-    if (isPaused)
+    if (mIsPaused)
         DrawPauseMessage();
     else
         DrawGame();
@@ -287,10 +279,8 @@ void Game::DrawGame()
     mSnake->Draw();
     mFood->Draw();
 
-    if (gameLost)
-    {
+    if (mGameLost)
         GameOverScreen();
-    }
 }
 
 void Game::DrawPauseMessage()
@@ -298,7 +288,7 @@ void Game::DrawPauseMessage()
     al_draw_text(mFont, al_map_rgb(255, 255, 255), mConfiguration->screenWidth / 2.0, mConfiguration->screenHeight / 4.0, ALLEGRO_ALIGN_CENTER, "GAME PAUSED");
 }
 
-int Game::GetScore()
+int Game::GetScore() const
 {
     return mScore;
 }
@@ -327,8 +317,10 @@ void Game::GameOverScreen()
         while (al_get_next_event(mEventQueue, &ev))
         {
             ImGui_ImplAllegro5_ProcessEvent(&ev);
+
             if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-                isRunning = false;
+                mIsRunning = false;
+
             if (ev.type == ALLEGRO_EVENT_DISPLAY_RESIZE)
             {
                 ImGui_ImplAllegro5_InvalidateDeviceObjects();
@@ -343,7 +335,8 @@ void Game::GameOverScreen()
 
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowPos(ImVec2(200, 100));
-        ImGui::Begin("Game over", NULL, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
+
+        ImGui::Begin("Game over", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
 
         ImGui::BeginChild("Score", ImVec2(300.0, 300.0));
 
@@ -377,10 +370,10 @@ void Game::GameOverScreen()
 
     mPlayerName = playerName;
 
-    isRunning = false;
+    mIsRunning = false;
 }
 
-std::string Game::GetPlayerName()
+const std::string& Game::GetPlayerName() const
 {
     return mPlayerName;
 }

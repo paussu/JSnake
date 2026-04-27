@@ -1,7 +1,3 @@
-//
-// Created by jipe on 5/9/21.
-//
-
 #pragma once
 
 
@@ -17,7 +13,7 @@ class Food
 
     void Draw() const;
     void SetPosition(ALLEGRO_VERTEX newPosition);
-    bool IsEaten(ALLEGRO_VERTEX &snakePosition) const;
+    bool IsEaten(const ALLEGRO_VERTEX &snakePosition) const;
  private:
    ALLEGRO_VERTEX mPosition{.x = 112.0f, .y = 112.0f, .color = {.r = 255, .g = 255, .b = 0, .a = 0}};
    float mFoodSize = 16.0f;

@@ -27,10 +27,13 @@ const char* ToString(LogLevel level)
     {
         case LogLevel::Debug:
             return "DEBUG";
+            break;
         case LogLevel::Error:
             return "ERROR";
+            break;
         default:
             return "LOG";
+            break;
     }
 }
 }
